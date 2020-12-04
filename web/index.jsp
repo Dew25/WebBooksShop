@@ -15,7 +15,9 @@
     <h1>Библиотека JPTVR19</h1>
     <p>${info}</p>
     <br>
-    <a href="addBook">Добавить книгу</a>
+    <a href="addBook">Добавить книгу</a><br>
+    <a href="addReader">Добавить читателя</a><br>
+    <a href="listBooks">Список книг</a><br>
     
   </body>
 </html>
