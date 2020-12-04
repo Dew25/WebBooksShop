@@ -20,6 +20,7 @@
       Название книги <input type="text" name="name"><br>
       Автор книги <input type="text" name="author"><br>
       Год издания книги <input type="text" name="publishedYear"><br>
+      ISBN <input type="text" name="isbn"><br>
       <input type="submit" name="submit" value="Добавить">
     </form>
   </body>

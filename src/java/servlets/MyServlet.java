@@ -5,13 +5,15 @@
  */
 package servlets;
 
+import entity.Book;
 import java.io.IOException;
-import java.io.PrintWriter;
+import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import session.BookFacade;
 
 /**
  *
@@ -22,7 +24,8 @@ import javax.servlet.http.HttpServletResponse;
     "/createBook",
 })
 public class MyServlet extends HttpServlet {
-
+    @EJB
+    private BookFacade bookFacade;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -36,7 +39,7 @@ public class MyServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
-        request.setAttribute("info", "Привет из MyServlet");
+        
         String path = request.getServletPath();
         switch (path) {
             case "/addBook":
@@ -46,11 +49,14 @@ public class MyServlet extends HttpServlet {
                 String name = request.getParameter("name");
                 String author = request.getParameter("author");
                 String publishedYear = request.getParameter("publishedYear");
+                String isbn = request.getParameter("isbn");
                 request.setAttribute("info", 
                         "Добавлена книга "+name+
                         ", автор: " + author +
                         ", год издания: "+ publishedYear        
                 );
+                Book book = new Book(name, author, Integer.parseInt(publishedYear), isbn);
+                bookFacade.create(book);
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
                 break;
         }

@@ -9,14 +9,13 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>JSP Page</title>
+    <title>Наша библиотека</title>
   </head>
   <body>
-    <h1>Hello JPTVR19</h1>
+    <h1>Библиотека JPTVR19</h1>
     <p>${info}</p>
     <br>
     <a href="addBook">Добавить книгу</a>
-    <br>
-    <a href="page2">Page2</a>
+    
   </body>
 </html>
