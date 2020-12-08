@@ -28,6 +28,7 @@ import session.ReaderFacade;
     "/addReader",
     "/createReader",
     "/listBooks",
+    "/listReaders",
     
 })
 public class MyServlet extends HttpServlet {
@@ -87,6 +88,11 @@ public class MyServlet extends HttpServlet {
                 List<Book> listBooks = bookFacade.findAll();
                 request.setAttribute("listBooks", listBooks);
                 request.getRequestDispatcher("/WEB-INF/listBooks.jsp").forward(request, response);
+                break;
+            case "/listReaders":
+                List<Reader> listReaders = readerFacade.findAll();
+                request.setAttribute("listReaders", listReaders);
+                request.getRequestDispatcher("/WEB-INF/listReaders.jsp").forward(request, response);
                 break;
         }
     }
