@@ -19,6 +19,8 @@
     <a href="addReader">Добавить читателя</a><br>
     <a href="listBooks">Список книг</a><br>
     <a href="listReaders">Список читателей</a><br>
+    <a href="takeOnBookForm">Выдать книгу</a><br>
+    <a href="returnBookForm">Вернуть книгу</a><br>
     
   </body>
 </html>

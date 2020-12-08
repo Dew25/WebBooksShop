@@ -6,8 +6,10 @@
 package servlets;
 
 import entity.Book;
+import entity.History;
 import entity.Reader;
 import java.io.IOException;
+import java.util.GregorianCalendar;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
@@ -16,6 +18,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import session.BookFacade;
+import session.HistoryFacade;
 import session.ReaderFacade;
 
 /**
@@ -29,6 +32,10 @@ import session.ReaderFacade;
     "/createReader",
     "/listBooks",
     "/listReaders",
+    "/takeOnBookForm",
+    "/takeOnBook",
+    "/returnBookForm",
+    "/returnBook",
     
 })
 public class MyServlet extends HttpServlet {
@@ -36,6 +43,8 @@ public class MyServlet extends HttpServlet {
     private BookFacade bookFacade;
     @EJB
     private ReaderFacade readerFacade;
+    @EJB
+    private HistoryFacade historyFacade;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -93,6 +102,57 @@ public class MyServlet extends HttpServlet {
                 List<Reader> listReaders = readerFacade.findAll();
                 request.setAttribute("listReaders", listReaders);
                 request.getRequestDispatcher("/WEB-INF/listReaders.jsp").forward(request, response);
+                break;
+            case "/takeOnBookForm":
+                listBooks = bookFacade.findAll();
+                request.setAttribute("listBooks", listBooks);
+                listReaders = readerFacade.findAll();
+                request.setAttribute("listReaders", listReaders);
+                request.getRequestDispatcher("/WEB-INF/takeOnBookForm.jsp").forward(request, response);
+                break;
+            case "/takeOnBook":
+                String bookId = request.getParameter("bookId");
+                String readerId = request.getParameter("readerId");
+                if("".equals(bookId) || bookId == null
+                        || "".equals(readerId) || readerId == null){
+                    request.setAttribute("info", "Выберите книгу или читателя.");
+                    request.getRequestDispatcher("/takeOnBookForm").forward(request, response);
+                    break;
+                }
+                book = bookFacade.find(Long.parseLong(bookId));
+                reader = readerFacade.find(Long.parseLong(readerId));
+                History history = new History(book, reader, new GregorianCalendar().getTime(), null);
+                historyFacade.create(history);
+                request.setAttribute("info", "Книга "
+                                                +history.getBook().getName()
+                                                +" выдана читателю "
+                                                +history.getReader().getFirstname() 
+                                                + " "
+                                                +history.getReader().getLastname());
+                request.getRequestDispatcher("/index.jsp").forward(request, response);
+                break;
+            case "/returnBookForm":
+                List<History> listHistoriesWithReadingBooks = historyFacade.findReadingBooks();
+                if(listHistoriesWithReadingBooks == null){
+                    request.setAttribute("info", "Нет читаемых книг");
+                    request.getRequestDispatcher("/WEB-INF/returnBookForm.jsp").forward(request, response);
+                    break;
+                }
+                request.setAttribute("listHistoriesWithReadingBooks", listHistoriesWithReadingBooks);
+                request.getRequestDispatcher("/WEB-INF/returnBookForm.jsp").forward(request, response);
+                break;
+            case "/returnBook":
+                String historyId = request.getParameter("historyId");
+                if("".equals(historyId) || historyId == null){
+                    request.setAttribute("info", "Выберите возвращаемую книгу.");
+                    request.getRequestDispatcher("/returnBookForm").forward(request, response);
+                    break;
+                }
+                history = historyFacade.find(Long.parseLong(historyId));
+                history.setReturnDate(new GregorianCalendar().getTime());
+                historyFacade.edit(history);
+                request.setAttribute("info", "Возвращена книга: "+ history.getBook().getName());
+                request.getRequestDispatcher("/index.jsp").forward(request, response);
                 break;
         }
     }
