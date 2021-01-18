@@ -7,6 +7,7 @@ package entity;
 
 import java.io.Serializable;
 import java.util.Objects;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,23 +23,21 @@ public class User implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private String login;
     private String password;
-    private String role;
+ 
     @OneToOne
     private Reader reader;
 
     public User() {
     }
 
-    public User(String login, String password, String role, Reader reader) {
+    public User(String login, String password, Reader reader) {
         this.login = login;
         this.password = password;
-        this.role = role;
         this.reader = reader;
     }
-
-   
 
     public String getLogin() {
         return login;
@@ -56,14 +55,6 @@ public class User implements Serializable{
         this.password = password;
     }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
     public Reader getReader() {
         return reader;
     }
@@ -77,7 +68,6 @@ public class User implements Serializable{
         return "User{" 
                 + "login=" + login 
                 + ", password=" + password 
-                + ", role=" + role 
                 + ", reader=" + reader.getFirstname()
                 + " " + reader.getLastname()
                 + '}';
@@ -97,7 +87,6 @@ public class User implements Serializable{
         hash = 23 * hash + Objects.hashCode(this.id);
         hash = 23 * hash + Objects.hashCode(this.login);
         hash = 23 * hash + Objects.hashCode(this.password);
-        hash = 23 * hash + Objects.hashCode(this.role);
         hash = 23 * hash + Objects.hashCode(this.reader);
         return hash;
     }
@@ -118,9 +107,6 @@ public class User implements Serializable{
             return false;
         }
         if (!Objects.equals(this.password, other.password)) {
-            return false;
-        }
-        if (!Objects.equals(this.role, other.role)) {
             return false;
         }
         if (!Objects.equals(this.id, other.id)) {

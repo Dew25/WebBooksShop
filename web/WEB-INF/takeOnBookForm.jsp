@@ -24,15 +24,9 @@
                     <option value="${book.id}">"${book.name}". ${book.author}. ${book.publishedYear}</option>
                 </c:forEach>
             </select>
-            Список читателей:<br>
-            <select name="readerId">
-                <option value="">Выберите читателя</option>
-                <c:forEach var="reader" items="${listReaders}">
-                    <option value="${reader.id}">"${reader.firstname}". ${reader.lastname}. ${reader.phone}</option>
-                </c:forEach>
-            </select>
+            
             <br>
-            <input type="submit" value="Выдать книгу">
+            <input type="submit" value="Взять книгу">
         </form>
     </body>
 </html>

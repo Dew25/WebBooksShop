@@ -7,9 +7,10 @@ package servlets;
 
 import entity.Book;
 import entity.Reader;
+import entity.Role;
 import entity.User;
+import entity.UserRoles;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
@@ -20,13 +21,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import session.BookFacade;
 import session.ReaderFacade;
+import session.RoleFacade;
 import session.UserFacade;
+import session.UserRolesFacade;
 
 /**
  *
  * @author jvm
  */
-@WebServlet(name = "LoginServlet", urlPatterns = {
+@WebServlet(name = "LoginServlet", loadOnStartup = 1, urlPatterns = {
     "/loginForm",
     "/login",
     "/logout",
@@ -41,6 +44,35 @@ public class LoginServlet extends HttpServlet {
     private ReaderFacade readerFacade;
 @EJB
     private BookFacade bookFacade;
+@EJB private RoleFacade roleFacade;
+@EJB private UserRolesFacade userRolesFacade;
+
+    @Override
+    public void init() throws ServletException {
+        
+       if(userFacade.findAll().size()>0) return;
+        
+        Reader reader = new Reader("Juri", "Melnikov", "56569987");
+        readerFacade.create(reader);
+        User user = new User("admin", "12345", reader);
+        userFacade.create(user);
+        Role role = new Role("ADMIN");
+        roleFacade.create(role);
+        UserRoles userRoles = new UserRoles(user, role);
+        userRolesFacade.create(userRoles);
+        role = new Role("MANAGER");
+        roleFacade.create(role);
+        userRoles = new UserRoles(user,role);
+        userRolesFacade.create(userRoles);
+        role = new Role("READER");
+        roleFacade.create(role);
+        userRoles = new UserRoles(user,role);
+        userRolesFacade.create(userRoles);
+        
+    }
+
+
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -109,8 +141,12 @@ public class LoginServlet extends HttpServlet {
                 
                 Reader reader = new Reader(firstname, lastname, phone);
                 readerFacade.create(reader);
-                user = new User(login, password, "USER", reader);
+                user = new User(login, password, reader);
                 userFacade.create(user);
+                //Здесь добавим роль пользователю.
+                Role roleReader = roleFacade.findByName("READER");
+                UserRoles userRoles = new UserRoles(user, roleReader);
+                userRolesFacade.create(userRoles);
                 request.setAttribute("info", 
                         "Читатель "+user.getLogin()+" добавлен"     
                 );
