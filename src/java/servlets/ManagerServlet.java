@@ -22,6 +22,7 @@ import session.BookFacade;
 import session.HistoryFacade;
 import session.ReaderFacade;
 import session.UserFacade;
+import session.UserRolesFacade;
 
 /**
  *
@@ -30,7 +31,7 @@ import session.UserFacade;
 @WebServlet(name = "ManagerServlet", urlPatterns = {
      "/addBook",
     "/createBook",
-    "/listReaders",
+    
 
 })
 public class ManagerServlet extends HttpServlet {
@@ -42,6 +43,7 @@ public class ManagerServlet extends HttpServlet {
     private HistoryFacade historyFacade;
     @EJB
     private UserFacade userFacade;
+    @EJB private UserRolesFacade userRolesFacade;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -67,8 +69,9 @@ public class ManagerServlet extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/loginForm.jsp").forward(request, response);
             return;
         }
-        if(!"manager".equals(user.getLogin())){
-            request.setAttribute("info", "У вас нет права использовать этот ресурс. Войдите!");
+        boolean isRole = userRolesFacade.isRole("MANAGER",user);
+        if(!isRole){
+            request.setAttribute("info", "У вас нет права использовать этот ресурс. Войдите с соответствующими правами!");
             request.getRequestDispatcher("/WEB-INF/loginForm.jsp").forward(request, response);
             return;
         }
@@ -94,11 +97,7 @@ public class ManagerServlet extends HttpServlet {
                 break;
             
             
-            case "/listReaders":
-                List<Reader> listReaders = readerFacade.findAll();
-                request.setAttribute("listReaders", listReaders);
-                request.getRequestDispatcher("/WEB-INF/listReaders.jsp").forward(request, response);
-                break;
+            
         }
     }
 

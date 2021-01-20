@@ -23,6 +23,7 @@
     <a href="listReaders">Список читателей</a><br>
     <a href="takeOnBookForm">Выдать книгу</a><br>
     <a href="returnBookForm">Вернуть книгу</a><br>
+    <a href="adminForm">Панель администратора</a><br>
     
   </body>
 </html>

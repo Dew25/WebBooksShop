@@ -5,13 +5,15 @@
  */
 package servlets;
 
-import entity.Book;
-import entity.History;
 import entity.Reader;
+import entity.Role;
 import entity.User;
+import entity.UserRoles;
 import java.io.IOException;
-import java.util.GregorianCalendar;
+import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -22,23 +24,21 @@ import javax.servlet.http.HttpSession;
 import session.BookFacade;
 import session.HistoryFacade;
 import session.ReaderFacade;
+import session.RoleFacade;
 import session.UserFacade;
 import session.UserRolesFacade;
 
 /**
  *
- * @author Melnikov
+ * @author jvm
  */
-@WebServlet(name = "ReaderServlet", urlPatterns = {
-   
-    "/takeOnBookForm",
-    "/takeOnBook",
-    "/returnBookForm",
-    "/returnBook",
-    
+@WebServlet(name = "AdminServlet", urlPatterns = {
+    "/listReaders",
+    "/adminForm",
+    "/addNewRole",
 })
-public class ReaderServlet extends HttpServlet {
-    @EJB
+public class AdminServlet extends HttpServlet {
+@EJB
     private BookFacade bookFacade;
     @EJB
     private ReaderFacade readerFacade;
@@ -47,6 +47,7 @@ public class ReaderServlet extends HttpServlet {
     @EJB
     private UserFacade userFacade;
     @EJB private UserRolesFacade userRolesFacade;
+    @EJB private RoleFacade roleFacade;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -67,66 +68,50 @@ public class ReaderServlet extends HttpServlet {
             return;
         }
         User user = (User) session.getAttribute("user");
-        if (user == null){
+        if(user == null){
             request.setAttribute("info", "У вас нет права использовать этот ресурс. Войдите!");
             request.getRequestDispatcher("/WEB-INF/loginForm.jsp").forward(request, response);
             return;
         }
-        boolean isRole = userRolesFacade.isRole("READER",user);
+        boolean isRole = userRolesFacade.isRole("ADMIN",user);
         if(!isRole){
             request.setAttribute("info", "У вас нет права использовать этот ресурс. Войдите с соответствующими правами!");
             request.getRequestDispatcher("/WEB-INF/loginForm.jsp").forward(request, response);
             return;
         }
+        
         String path = request.getServletPath();
         switch (path) {
-            case "/takeOnBookForm":
-                List<Book> listBooks = bookFacade.findAll();
-                request.setAttribute("listBooks", listBooks);
-                request.getRequestDispatcher("/WEB-INF/takeOnBookForm.jsp").forward(request, response);
+            case "/listReaders":
+                List<Reader> listReaders = readerFacade.findAll();
+                request.setAttribute("listReaders", listReaders);
+                request.getRequestDispatcher("/WEB-INF/listReaders.jsp").forward(request, response);
                 break;
-            case "/takeOnBook":
-                String bookId = request.getParameter("bookId");
-               
-                if("".equals(bookId) || bookId == null){
-                    request.setAttribute("info", "Выберите книгу или читателя.");
-                    request.getRequestDispatcher("/takeOnBookForm").forward(request, response);
+            case "/adminForm":
+                List<Role> listRoles = roleFacade.findAll();
+                request.setAttribute("listRoles", listRoles);
+                Map<User,String> usersMap = new HashMap<>();
+                List<User> listUsers = userFacade.findAll();
+                for(int i = 0; i < listUsers.size(); i++){
+                    usersMap.put(listUsers.get(i), userRolesFacade.getTopRoleForUser(listUsers.get(i)));
+                }
+                request.setAttribute("usersMap", usersMap);
+                request.getRequestDispatcher("/WEB-INF/adminPanel.jsp").forward(request, response);
+                break;
+            case "/addNewRole":
+                String userId = request.getParameter("userId");
+                String roleId = request.getParameter("roleId");
+                if("".equals(userId) || userId == null
+                        || "".equals(roleId) || roleId == null){
+                    request.setAttribute("info", "Заполните все поля");
+                    request.getRequestDispatcher("/adminForm").forward(request, response);
                     break;
                 }
-                Book book = bookFacade.find(Long.parseLong(bookId));
-                Reader reader = user.getReader();
-                History history = new History(book, reader, new GregorianCalendar().getTime(), null);
-                historyFacade.create(history);
-                request.setAttribute("info", "Книга "
-                                                +history.getBook().getName()
-                                                +" выдана читателю "
-                                                +history.getReader().getFirstname() 
-                                                + " "
-                                                +history.getReader().getLastname());
-                request.getRequestDispatcher("/index.jsp").forward(request, response);
-                break;
-            case "/returnBookForm":
-                List<History> listHistoriesWithReadingBooks = historyFacade.findReadingBooks(user.getReader());
-                if(listHistoriesWithReadingBooks == null){
-                    request.setAttribute("info", "Нет читаемых книг");
-                    request.getRequestDispatcher("/WEB-INF/returnBookForm.jsp").forward(request, response);
-                    break;
-                }
-                request.setAttribute("listHistoriesWithReadingBooks", listHistoriesWithReadingBooks);
-                request.getRequestDispatcher("/WEB-INF/returnBookForm.jsp").forward(request, response);
-                break;
-            case "/returnBook":
-                String historyId = request.getParameter("historyId");
-                if("".equals(historyId) || historyId == null){
-                    request.setAttribute("info", "Выберите возвращаемую книгу.");
-                    request.getRequestDispatcher("/returnBookForm").forward(request, response);
-                    break;
-                }
-                history = historyFacade.find(Long.parseLong(historyId));
-                history.setReturnDate(new GregorianCalendar().getTime());
-                historyFacade.edit(history);
-                request.setAttribute("info", "Возвращена книга: "+ history.getBook().getName());
-                request.getRequestDispatcher("/index.jsp").forward(request, response);
+                user = userFacade.find(Long.parseLong(userId));
+                Role role = roleFacade.find(Long.parseLong(roleId));
+                UserRoles userRoles = new UserRoles(user, role);
+                userRolesFacade.setNewRole(userRoles);
+                request.getRequestDispatcher("/adminForm").forward(request, response);
                 break;
         }
     }
