@@ -35,7 +35,7 @@ import session.UserRolesFacade;
 @WebServlet(name = "AdminServlet", urlPatterns = {
     "/listReaders",
     "/adminForm",
-    "/addNewRole",
+    "/setRole",
 })
 public class AdminServlet extends HttpServlet {
 @EJB
@@ -92,17 +92,19 @@ public class AdminServlet extends HttpServlet {
                 request.setAttribute("listRoles", listRoles);
                 Map<User,String> usersMap = new HashMap<>();
                 List<User> listUsers = userFacade.findAll();
-                for(int i = 0; i < listUsers.size(); i++){
-                    usersMap.put(listUsers.get(i), userRolesFacade.getTopRoleForUser(listUsers.get(i)));
+                for(User u : listUsers){
+                    usersMap.put(u, userRolesFacade.getTopRoleForUser(u));
                 }
                 request.setAttribute("usersMap", usersMap);
                 request.getRequestDispatcher("/WEB-INF/adminPanel.jsp").forward(request, response);
                 break;
-            case "/addNewRole":
+            case "/setRole":
                 String userId = request.getParameter("userId");
                 String roleId = request.getParameter("roleId");
                 if("".equals(userId) || userId == null
                         || "".equals(roleId) || roleId == null){
+                    request.setAttribute("userId", userId);
+                    request.setAttribute("roleId", roleId);
                     request.setAttribute("info", "Заполните все поля");
                     request.getRequestDispatcher("/adminForm").forward(request, response);
                     break;
@@ -110,7 +112,14 @@ public class AdminServlet extends HttpServlet {
                 user = userFacade.find(Long.parseLong(userId));
                 Role role = roleFacade.find(Long.parseLong(roleId));
                 UserRoles userRoles = new UserRoles(user, role);
-                userRolesFacade.setNewRole(userRoles);
+                if(!"admin".equals(user.getLogin())){
+                    userRolesFacade.setNewRole(userRoles);
+                    request.setAttribute("info", "Роль изменена");
+                }else{
+                    request.setAttribute("userId", userId);
+                    request.setAttribute("roleId", roleId);
+                    request.setAttribute("info", "Изменить роль невозможно");
+                }
                 request.getRequestDispatcher("/adminForm").forward(request, response);
                 break;
         }

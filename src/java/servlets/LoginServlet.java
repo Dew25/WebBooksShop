@@ -51,7 +51,6 @@ public class LoginServlet extends HttpServlet {
     public void init() throws ServletException {
         
        if(userFacade.findAll().size()>0) return;
-        
         Reader reader = new Reader("Juri", "Melnikov", "56569987");
         readerFacade.create(reader);
         User user = new User("admin", "12345", reader);

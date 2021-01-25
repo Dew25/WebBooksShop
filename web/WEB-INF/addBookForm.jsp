@@ -5,13 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Новая книга</title>
-  </head>
-  <body>
+
     <h1>Добавить новую книгу</h1>
     <p>${info}</p>
     <br>
@@ -23,5 +17,4 @@
       ISBN <input type="text" name="isbn"><br>
       <input type="submit" name="submit" value="Добавить">
     </form>
-  </body>
-</html>
+ 
