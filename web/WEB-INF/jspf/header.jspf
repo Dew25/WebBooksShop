@@ -8,7 +8,8 @@
     <title>Наша библиотека</title>
   </head>
   <body>
-    <h1>Библиотека JPTVR19</h1>
-    <p>${info}</p>
-    <br>
-    <c:import url="/WEB-INF/menu/menu.jsp" />
+    <div class="container">
+        <h1>Библиотека JPTVR19</h1>
+        <p>${info}</p>
+        <br>
+        <c:import url="/WEB-INF/menu/menu.jsp" />

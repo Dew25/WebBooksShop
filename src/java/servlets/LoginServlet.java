@@ -12,6 +12,7 @@ import entity.User;
 import entity.UserRoles;
 import java.io.IOException;
 import java.util.List;
+import java.util.ResourceBundle;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -47,6 +48,8 @@ public class LoginServlet extends HttpServlet {
 @EJB private RoleFacade roleFacade;
 @EJB private UserRolesFacade userRolesFacade;
 
+public static final ResourceBundle pathToFile = ResourceBundle.getBundle("property.pathToFile");
+        
     @Override
     public void init() throws ServletException {
         
@@ -89,7 +92,7 @@ public class LoginServlet extends HttpServlet {
         String path = request.getServletPath();
         switch (path) {
             case "/loginForm":
-                request.getRequestDispatcher("/WEB-INF/loginForm.jsp").forward(request, response);
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("login")).forward(request, response);
                 break;
             case "/login":
                 String login = request.getParameter("login");
@@ -109,7 +112,7 @@ public class LoginServlet extends HttpServlet {
                 HttpSession session = request.getSession(true);
                 session.setAttribute("user", user);
                 request.setAttribute("info","Вы вошли как "+ user.getLogin());
-                request.getRequestDispatcher("/index.jsp").forward(request, response);
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("index")).forward(request, response);
                 break;
             case "/logout":
                 session = request.getSession(false);
@@ -117,10 +120,10 @@ public class LoginServlet extends HttpServlet {
                    session.invalidate();
                 }
                 request.setAttribute("info", "Вы вышли");
-                request.getRequestDispatcher("/index.jsp").forward(request, response);
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("index")).forward(request, response);
                 break;
             case "/registrationForm":
-                request.getRequestDispatcher("/WEB-INF/registrationForm.jsp").forward(request, response);
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("registration")).forward(request, response);
                 break;
             case "/createUser":
                 String firstname = request.getParameter("firstname");
@@ -149,12 +152,12 @@ public class LoginServlet extends HttpServlet {
                 request.setAttribute("info", 
                         "Читатель "+user.getLogin()+" добавлен"     
                 );
-                request.getRequestDispatcher("/index.jsp").forward(request, response);
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("index")).forward(request, response);
                 break; 
             case "/listBooks":
                 List<Book> listBooks = bookFacade.findAll();
                 request.setAttribute("listBooks", listBooks);
-                request.getRequestDispatcher("/WEB-INF/listBooks.jsp").forward(request, response);
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("listBooks")).forward(request, response);
                 break;    
         }
     }

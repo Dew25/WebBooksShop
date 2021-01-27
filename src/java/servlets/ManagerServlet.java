@@ -60,26 +60,26 @@ public class ManagerServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if(session == null){
             request.setAttribute("info", "У вас нет права использовать этот ресурс. Войдите!");
-            request.getRequestDispatcher("/WEB-INF/loginForm.jsp").forward(request, response);
+            request.getRequestDispatcher("/loginForm").forward(request, response);
             return;
         }
         User user = (User) session.getAttribute("user");
         if(user == null){
             request.setAttribute("info", "У вас нет права использовать этот ресурс. Войдите!");
-            request.getRequestDispatcher("/WEB-INF/loginForm.jsp").forward(request, response);
+            request.getRequestDispatcher("/loginForm").forward(request, response);
             return;
         }
         boolean isRole = userRolesFacade.isRole("MANAGER",user);
         if(!isRole){
             request.setAttribute("info", "У вас нет права использовать этот ресурс. Войдите с соответствующими правами!");
-            request.getRequestDispatcher("/WEB-INF/loginForm.jsp").forward(request, response);
+            request.getRequestDispatcher("/loginForm").forward(request, response);
             return;
         }
         
         String path = request.getServletPath();
         switch (path) {
             case "/addBook":
-                request.getRequestDispatcher("/WEB-INF/addBookForm.jsp").forward(request, response);
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("addBook")).forward(request, response);
                 break;
             case "/createBook":
                 String name = request.getParameter("name");
@@ -93,7 +93,7 @@ public class ManagerServlet extends HttpServlet {
                 );
                 Book book = new Book(name, author, Integer.parseInt(publishedYear), isbn);
                 bookFacade.create(book);
-                request.getRequestDispatcher("/index.jsp").forward(request, response);
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("index")).forward(request, response);
                 break;
             
             

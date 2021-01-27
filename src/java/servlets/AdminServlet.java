@@ -64,28 +64,27 @@ public class AdminServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if(session == null){
             request.setAttribute("info", "У вас нет права использовать этот ресурс. Войдите!");
-            request.getRequestDispatcher("/WEB-INF/loginForm.jsp").forward(request, response);
+            request.getRequestDispatcher("/loginForm").forward(request, response);
             return;
         }
         User user = (User) session.getAttribute("user");
         if(user == null){
             request.setAttribute("info", "У вас нет права использовать этот ресурс. Войдите!");
-            request.getRequestDispatcher("/WEB-INF/loginForm.jsp").forward(request, response);
+            request.getRequestDispatcher("/loginForm").forward(request, response);
             return;
         }
         boolean isRole = userRolesFacade.isRole("ADMIN",user);
         if(!isRole){
             request.setAttribute("info", "У вас нет права использовать этот ресурс. Войдите с соответствующими правами!");
-            request.getRequestDispatcher("/WEB-INF/loginForm.jsp").forward(request, response);
+            request.getRequestDispatcher("/loginForm").forward(request, response);
             return;
         }
-        
         String path = request.getServletPath();
         switch (path) {
             case "/listReaders":
                 List<Reader> listReaders = readerFacade.findAll();
                 request.setAttribute("listReaders", listReaders);
-                request.getRequestDispatcher("/WEB-INF/listReaders.jsp").forward(request, response);
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("listReaders")).forward(request, response);
                 break;
             case "/adminForm":
                 List<Role> listRoles = roleFacade.findAll();
@@ -96,7 +95,7 @@ public class AdminServlet extends HttpServlet {
                     usersMap.put(u, userRolesFacade.getTopRoleForUser(u));
                 }
                 request.setAttribute("usersMap", usersMap);
-                request.getRequestDispatcher("/WEB-INF/adminPanel.jsp").forward(request, response);
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("adminPanel")).forward(request, response);
                 break;
             case "/setRole":
                 String userId = request.getParameter("userId");
