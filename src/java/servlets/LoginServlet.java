@@ -92,6 +92,7 @@ public static final ResourceBundle pathToFile = ResourceBundle.getBundle("proper
         String path = request.getServletPath();
         switch (path) {
             case "/loginForm":
+                request.setAttribute("activeEnter", "true");
                 request.getRequestDispatcher(LoginServlet.pathToFile.getString("login")).forward(request, response);
                 break;
             case "/login":
@@ -123,6 +124,7 @@ public static final ResourceBundle pathToFile = ResourceBundle.getBundle("proper
                 request.getRequestDispatcher(LoginServlet.pathToFile.getString("index")).forward(request, response);
                 break;
             case "/registrationForm":
+                request.setAttribute("activeRegistration", "true");
                 request.getRequestDispatcher(LoginServlet.pathToFile.getString("registration")).forward(request, response);
                 break;
             case "/createUser":
@@ -155,6 +157,7 @@ public static final ResourceBundle pathToFile = ResourceBundle.getBundle("proper
                 request.getRequestDispatcher(LoginServlet.pathToFile.getString("index")).forward(request, response);
                 break; 
             case "/listBooks":
+                request.setAttribute("activeListBook", "true");
                 List<Book> listBooks = bookFacade.findAll();
                 request.setAttribute("listBooks", listBooks);
                 request.getRequestDispatcher(LoginServlet.pathToFile.getString("listBooks")).forward(request, response);

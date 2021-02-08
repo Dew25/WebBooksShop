@@ -7,11 +7,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
-        <h2>Список книг</h2>
-        <a href="index.jsp">Главная страница</a>
-        <ol>
+<h3 class="w-100 my-5 text-center">Список книг</h3>
+       
+        <ol class="w-50 mx-auto border">
             <c:forEach var="book" items="${listBooks}">
-                <li>"${book.name}". ${book.author}. ${book.publishedYear}</li>
+                <li><a href="readBook?bookId=${book.id}">"${book.name}". ${book.author}. ${book.publishedYear}</a></li>
             </c:forEach>
         </ol>
     

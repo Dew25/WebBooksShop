@@ -81,6 +81,7 @@ public class ReaderServlet extends HttpServlet {
         String path = request.getServletPath();
         switch (path) {
             case "/takeOnBookForm":
+                request.setAttribute("activeTakeOnBook", "true");
                 List<Book> listBooks = bookFacade.findAll();
                 request.setAttribute("listBooks", listBooks);
                 request.getRequestDispatcher(LoginServlet.pathToFile.getString("takeOnBook")).forward(request, response);
@@ -106,6 +107,7 @@ public class ReaderServlet extends HttpServlet {
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
                 break;
             case "/returnBookForm":
+                request.setAttribute("activeReturnBook", "true");
                 List<History> listHistoriesWithReadingBooks = historyFacade.findReadingBooks(user.getReader());
                 if(listHistoriesWithReadingBooks == null){
                     request.setAttribute("info", "Нет читаемых книг");

@@ -6,10 +6,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
-    <h1>Добавить новую книгу</h1>
-    <p>${info}</p>
-    <br>
-    <a href="index.jsp">Главная страница</a>
+    <h3 class="w-100 text-center my-5 ">Добавить новую книгу</h3>
     <form action="createBook" method="POST">
       <div class="row m-2">
         <div class="col text-end">
@@ -43,9 +40,9 @@
             <input type="text" name="isbn">
         </div>
       </div>
-      <div class="row m-2">
-        <div class="col text-center mt-3">    
-            <input type="submit" name="submit" value="Добавить">
+      <div class="row my-4">
+        <div class="text-center">    
+          <input class="col-2" type="submit" name="submit" value="Добавить">
         </div>
       </div>
     </form>

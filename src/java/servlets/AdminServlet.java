@@ -82,11 +82,13 @@ public class AdminServlet extends HttpServlet {
         String path = request.getServletPath();
         switch (path) {
             case "/listReaders":
+                request.setAttribute("activeListReaders", "true");
                 List<Reader> listReaders = readerFacade.findAll();
                 request.setAttribute("listReaders", listReaders);
                 request.getRequestDispatcher(LoginServlet.pathToFile.getString("listReaders")).forward(request, response);
                 break;
             case "/adminForm":
+                request.setAttribute("activeAdminPanel", "true");
                 List<Role> listRoles = roleFacade.findAll();
                 request.setAttribute("listRoles", listRoles);
                 Map<User,String> usersMap = new HashMap<>();

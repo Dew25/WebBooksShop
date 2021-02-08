@@ -11,15 +11,11 @@
     <jsp-config>
         <jsp-property-group>
             <display-name>template1</display-name>
-            <url-pattern>/WEB-INF/registrationForm.jsp</url-pattern>
-            <url-pattern>/WEB-INF/takeOnBookForm.jsp</url-pattern>
-            <url-pattern>/WEB-INF/adminPanel.jsp</url-pattern>
-            <url-pattern>/WEB-INF/returnBookForm.jsp</url-pattern>
+            <url-pattern>/WEB-INF/admin/*</url-pattern>
+            <url-pattern>/WEB-INF/reader/*</url-pattern>
+            <url-pattern>/WEB-INF/manager/*</url-pattern>
+            <url-pattern>/WEB-INF/guest/*</url-pattern>
             <url-pattern>/index.jsp</url-pattern>
-            <url-pattern>/WEB-INF/addBookForm.jsp</url-pattern>
-            <url-pattern>/WEB-INF/listBooks.jsp</url-pattern>
-            <url-pattern>/WEB-INF/listReaders.jsp</url-pattern>
-            <url-pattern>/WEB-INF/loginForm.jsp</url-pattern>
             <page-encoding>UTF-8</page-encoding>
             <include-prelude>/WEB-INF/jspf/header.jspf</include-prelude>
             <include-coda>/WEB-INF/jspf/footer.jspf</include-coda>

@@ -7,18 +7,14 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
-    <h1>Возвращение книги</h1>
-    <p>${info}</p>
-    <br>
-    <a href="index.jsp">Главная страница</a>
-    <form action="returnBook" method="POST">
-        <h1>Список читаемых книг</h1>
-        <select name="historyId">
-            <option value="">Выберите возвращаемую книгу</option>
-            <c:forEach var="history" items="${listHistoriesWithReadingBooks}">
-                <option value="${history.id}">"${history.book.name}" читает ${history.reader.firstname} ${history.reader.lastname}</option>
-            </c:forEach>
-        </select>
-        <input type="submit" name="submit" value="Вернуть книгу">
-    </form>
+<h3 class="w-100 text-center my-5"></h3>
   
+  <div class="card" style="max-width: 10em;">
+    <img src="..." class="card-img-top" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">Card title</h5>
+      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+      <a href="#" class="btn btn-primary">Go somewhere</a>
+    </div>
+  </div>
+    

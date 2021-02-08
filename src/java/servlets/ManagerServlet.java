@@ -79,6 +79,7 @@ public class ManagerServlet extends HttpServlet {
         String path = request.getServletPath();
         switch (path) {
             case "/addBook":
+                request.setAttribute("activeAddBook", "true");
                 request.getRequestDispatcher(LoginServlet.pathToFile.getString("addBook")).forward(request, response);
                 break;
             case "/createBook":
@@ -89,7 +90,7 @@ public class ManagerServlet extends HttpServlet {
                 request.setAttribute("info", 
                         "Добавлена книга "+name+
                         ", автор: " + author +
-                        ", год издания: "+ publishedYear        
+                        ", год издания: "+ publishedYear
                 );
                 Book book = new Book(name, author, Integer.parseInt(publishedYear), isbn);
                 bookFacade.create(book);
