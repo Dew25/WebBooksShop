@@ -83,8 +83,15 @@ public class AdminServlet extends HttpServlet {
         switch (path) {
             case "/listReaders":
                 request.setAttribute("activeListReaders", "true");
-                List<Reader> listReaders = readerFacade.findAll();
-                request.setAttribute("listReaders", listReaders);
+                List<User> listUsers = userFacade.findAll();
+                Map<User,List<String>> usersMapWithArrayRoles = new HashMap<>();
+                for(User u : listUsers){
+                    List<String> arrStrRoles = userRolesFacade.findRoles(u);
+                    usersMapWithArrayRoles.put(u, arrStrRoles);
+                }
+                
+                request.setAttribute("usersMapWithArrayRoles", usersMapWithArrayRoles);
+                request.setAttribute("usersCount", listUsers.size());
                 request.getRequestDispatcher(LoginServlet.pathToFile.getString("listReaders")).forward(request, response);
                 break;
             case "/adminForm":
@@ -92,7 +99,7 @@ public class AdminServlet extends HttpServlet {
                 List<Role> listRoles = roleFacade.findAll();
                 request.setAttribute("listRoles", listRoles);
                 Map<User,String> usersMap = new HashMap<>();
-                List<User> listUsers = userFacade.findAll();
+                listUsers = userFacade.findAll();
                 for(User u : listUsers){
                     usersMap.put(u, userRolesFacade.getTopRoleForUser(u));
                 }

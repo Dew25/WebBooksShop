@@ -9,7 +9,7 @@
 
 <h3 class="w-100 text-center my-5"></h3>
   
-  <div class="card" style="max-width: 10em;">
+  <div class="card" style="max-width: 12rem;">
     <img src="..." class="card-img-top" alt="...">
     <div class="card-body">
       <h5 class="card-title">Card title</h5>

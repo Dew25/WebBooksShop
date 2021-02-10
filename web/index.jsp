@@ -6,7 +6,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
-<p>Добро пожаловать в нашу библиотеку!</p>
+<p class="w-100 text-center my-5">Добро пожаловать в нашу библиотеку!</p>
     
     
   

@@ -93,5 +93,12 @@ public class UserRolesFacade extends AbstractFacade<UserRoles> {
             this.create(ur);
         }
     }
+
+    public List<String> findRoles(User user) {
+         return em.createQuery("SELECT ur.role.roleName FROM UserRoles ur WHERE ur.user = :user")
+                .setParameter("user", user)
+                .getResultList();
+         
+    }
     
 }
