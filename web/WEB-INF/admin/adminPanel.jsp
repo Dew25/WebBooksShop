@@ -6,10 +6,8 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-
-        <h1>Панель администратора</h1>
-        <a href="index.jsp">Главная страница</a>
-        <p>${info}</p>
+        <h3  class="w-100 my-5 text-center">Панель администратора</h3>
+<div class="w-100 d-flex justify-content-center m-2">
         <form action="setRole" method="POST">
             <p>
                 Список пользователей: 
@@ -31,4 +29,5 @@
             </p>
             <p><input type="submit" value="Назначить роль пользователю"></p>
         </form>
+</div>
 

@@ -6,7 +6,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-        <h1>Список читателей</h1>
+        <h3 class="w-100 my-5 text-center">Список читателей</h3>
         <p class="">Всего пользователей: ${usersCount}<p>
         <table class="table table-striped">
               <thead>
