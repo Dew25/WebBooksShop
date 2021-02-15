@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 /**
  *
@@ -25,16 +26,22 @@ public class Book implements Serializable{
     private String author;
     private Integer publishedYear;
     private String isbn;
+    @OneToOne
+    private Cover cover;
+    
 
     public Book() {
     }
 
-    public Book(String name, String author, Integer publishedYear, String isbn) {
+    public Book(String name, String author, Integer publishedYear, String isbn, Cover cover) {
         this.name = name;
         this.author = author;
         this.publishedYear = publishedYear;
         this.isbn = isbn;
+        this.cover = cover;
     }
+
+   
 
     public String getName() {
         return name;
@@ -126,6 +133,14 @@ public class Book implements Serializable{
             return false;
         }
         return true;
+    }
+
+    public Cover getCover() {
+        return cover;
+    }
+
+    public void setCover(Cover cover) {
+        this.cover = cover;
     }
     
     

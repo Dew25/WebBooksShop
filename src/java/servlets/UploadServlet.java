@@ -5,49 +5,41 @@
  */
 package servlets;
 
-import entity.Book;
 import entity.Cover;
-import entity.Reader;
 import entity.User;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import session.BookFacade;
+import javax.servlet.http.Part;
+import static jdk.nashorn.internal.objects.NativeError.getFileName;
 import session.CoverFacade;
-import session.HistoryFacade;
-import session.ReaderFacade;
-import session.UserFacade;
 import session.UserRolesFacade;
 
 /**
  *
- * @author jvm
+ * @author Melnikov
  */
-@WebServlet(name = "ManagerServlet", urlPatterns = {
-     "/addBook",
-    "/createBook",
-    "/uploadForm",
+@WebServlet(name = "UploadServlet", urlPatterns = {
+    "/uploadCover",
     
-
 })
-public class ManagerServlet extends HttpServlet {
-    @EJB
-    private BookFacade bookFacade;
-    @EJB
-    private ReaderFacade readerFacade;
-    @EJB
-    private HistoryFacade historyFacade;
-    @EJB
-    private UserFacade userFacade;
-    @EJB private UserRolesFacade userRolesFacade;
-    @EJB private CoverFacade coverFacade;
+@MultipartConfig
+public class UploadServlet extends HttpServlet {
+    @EJB UserRolesFacade userRolesFacade;
+    @EJB CoverFacade coverFacade;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -79,42 +71,38 @@ public class ManagerServlet extends HttpServlet {
             request.getRequestDispatcher("/loginForm").forward(request, response);
             return;
         }
-        
-        String path = request.getServletPath();
-        switch (path) {
-            case "/addBook":
-                List<Cover> listCovers = coverFacade.findAll();
-                request.setAttribute("listCovers", listCovers);
-                request.setAttribute("activeAddBook", "true");
-                request.getRequestDispatcher(LoginServlet.pathToFile.getString("addBook")).forward(request, response);
-                break;
-            case "/createBook":
-                String name = request.getParameter("name");
-                String author = request.getParameter("author");
-                String publishedYear = request.getParameter("publishedYear");
-                String isbn = request.getParameter("isbn");
-                String coverId = request.getParameter("coverId");
-                if("".equals(coverId) || coverId==null){
-                    request.setAttribute("info", "Выберите файл обложки");
-                    request.getRequestDispatcher("/addBook").forward(request, response);
-                }
-                request.setAttribute("info", 
-                        "Добавлена книга "+name+
-                        ", автор: " + author +
-                        ", год издания: "+ publishedYear
-                );
-                Cover cover = coverFacade.find(Long.parseLong(coverId));
-                Book book = new Book(name, author, Integer.parseInt(publishedYear), isbn, cover);
-                bookFacade.create(book);
-                request.getRequestDispatcher(LoginServlet.pathToFile.getString("index")).forward(request, response);
-                break;
-            case "/uploadForm":
-               
-                request.getRequestDispatcher(LoginServlet.pathToFile.getString("uploadForm")).forward(request, response);
-                break;
-            
-            
+        String uploadFolder = "D:\\UploadJPTVR19WebLibrary";
+        List<Part> fileParts = request
+                .getParts()
+                .stream()
+                .filter(part -> "file".equals(part.getName()))
+                .collect(Collectors.toList());
+        StringBuilder sb = new StringBuilder();
+        for(Part filePart : fileParts){
+           sb.append(uploadFolder+File.separator + getFileName(filePart));
+           File file = new File(sb.toString());
+           file.mkdirs();
+           try(InputStream fileContent = filePart.getInputStream()){
+               Files.copy(fileContent, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+           }
         }
+        String description = request.getParameter("description");
+        Cover cover = new Cover(description,sb.toString());
+        coverFacade.create(cover);
+        request.setAttribute("info", "Файл загружен");
+        request.getRequestDispatcher("/addBook").forward(request, response);
+    }
+    private String getFileName(Part part){
+        final String partHeader = part.getHeader("content-disposition");
+        for (String content : part.getHeader("content-disposition").split(";")){
+            if(content.trim().startsWith("filename")){
+                return content
+                        .substring(content.indexOf('=')+1)
+                        .trim()
+                        .replace("\"",""); 
+            }
+        }
+        return null;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
