@@ -12,12 +12,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Melnikov
  */
 @Entity
+@XmlRootElement
 public class Book implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
