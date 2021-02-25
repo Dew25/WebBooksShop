@@ -48,6 +48,7 @@ public class UserRolesFacade extends AbstractFacade<UserRoles> {
     }
 
     public String getTopRoleForUser(User user) {
+        if(user == null) return "";
         List<UserRoles> listUserRoles = em.createQuery("SELECT userRoles FROM UserRoles userRoles WHERE userRoles.user = :user")
                 .setParameter("user", user)
                 .getResultList();
@@ -66,7 +67,7 @@ public class UserRolesFacade extends AbstractFacade<UserRoles> {
                 return "READER";
             }
         }
-        return "-";
+        return "";
     }
 
     public void setNewRole(UserRoles userRoles) {

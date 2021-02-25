@@ -79,7 +79,7 @@ public class ManagerServlet extends HttpServlet {
             request.getRequestDispatcher("/loginForm").forward(request, response);
             return;
         }
-        
+        request.setAttribute("role", userRolesFacade.getTopRoleForUser(user));
         String path = request.getServletPath();
         switch (path) {
             case "/addBook":

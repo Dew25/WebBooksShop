@@ -6,13 +6,18 @@
 package servlets;
 
 import entity.Book;
+import entity.Cover;
 import entity.Reader;
 import entity.Role;
 import entity.User;
 import entity.UserRoles;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -21,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import session.BookFacade;
+import session.CoverFacade;
 import session.ReaderFacade;
 import session.RoleFacade;
 import session.UserFacade;
@@ -31,6 +37,7 @@ import session.UserRolesFacade;
  * @author jvm
  */
 @WebServlet(name = "LoginServlet", loadOnStartup = 1, urlPatterns = {
+    "/index",
     "/loginForm",
     "/login",
     "/logout",
@@ -47,6 +54,7 @@ public class LoginServlet extends HttpServlet {
     private BookFacade bookFacade;
 @EJB private RoleFacade roleFacade;
 @EJB private UserRolesFacade userRolesFacade;
+@EJB private CoverFacade coverFacade;
 
 public static final ResourceBundle pathToFile = ResourceBundle.getBundle("property.pathToFile");
         
@@ -88,11 +96,40 @@ public static final ResourceBundle pathToFile = ResourceBundle.getBundle("proper
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
+        HttpSession session = request.getSession(false);
+        User user=null;
+        if(session != null){
+            user = (User) session.getAttribute("user");
+        }
         
+        request.setAttribute("role", userRolesFacade.getTopRoleForUser(user));
+    
         String path = request.getServletPath();
         switch (path) {
+            case "/index":
+                Map<Integer,List<String>> coversMap = new HashMap<>();
+                List<String> listPaths = new ArrayList<>();
+                List<Cover> listCovers = coverFacade.findAll();
+                Integer key = 0;
+                int n = 5;
+                while(listCovers.size()>0){
+                    listPaths = listCovers.stream()
+                            .map(cover -> cover.getPath())
+                            .limit(5)
+                            .collect(Collectors.toList());
+                    listCovers.removeIf(x -> )
+                            .filter(x -> x.
+                            .map(x -> listCovers.remove(x))
+                            .collect(Collectors.toList());
+                    coversMap.put(key,listPaths);
+                    key++;
+                }
+                request.setAttribute("coversMap", coversMap);
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("login")).forward(request, response);
+                break;
             case "/loginForm":
                 request.setAttribute("activeEnter", "true");
+                //response.sendRedirect(LoginServlet.pathToFile.getString("login"));
                 request.getRequestDispatcher(LoginServlet.pathToFile.getString("login")).forward(request, response);
                 break;
             case "/login":
@@ -104,15 +141,17 @@ public static final ResourceBundle pathToFile = ResourceBundle.getBundle("proper
                     request.getRequestDispatcher("/loginForm").forward(request, response);
                     break;
                 }
-                User user = userFacade.findByLogin(login);
+                user = userFacade.findByLogin(login);
                 if(user == null){
                     request.setAttribute("info","Нет такого пользователя");
                     request.getRequestDispatcher("/loginForm").forward(request, response);
                     break;
                 }
-                HttpSession session = request.getSession(true);
+                session = request.getSession(true);
                 session.setAttribute("user", user);
                 request.setAttribute("info","Вы вошли как "+ user.getLogin());
+                request.setAttribute("role", userRolesFacade.getTopRoleForUser(user));
+                
                 request.getRequestDispatcher(LoginServlet.pathToFile.getString("index")).forward(request, response);
                 break;
             case "/logout":
@@ -121,6 +160,7 @@ public static final ResourceBundle pathToFile = ResourceBundle.getBundle("proper
                    session.invalidate();
                 }
                 request.setAttribute("info", "Вы вышли");
+                request.setAttribute("role", userRolesFacade.getTopRoleForUser(null));
                 request.getRequestDispatcher(LoginServlet.pathToFile.getString("index")).forward(request, response);
                 break;
             case "/registrationForm":

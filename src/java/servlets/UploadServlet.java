@@ -10,7 +10,6 @@ import entity.User;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
@@ -24,7 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
-import static jdk.nashorn.internal.objects.NativeError.getFileName;
 import session.CoverFacade;
 import session.UserRolesFacade;
 
@@ -71,6 +69,7 @@ public class UploadServlet extends HttpServlet {
             request.getRequestDispatcher("/loginForm").forward(request, response);
             return;
         }
+        request.setAttribute("role", userRolesFacade.getTopRoleForUser(user));
         String uploadFolder = "D:\\UploadJPTVR19WebLibrary";
         List<Part> fileParts = request
                 .getParts()

@@ -14,15 +14,33 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
-        <a class="nav-link <c:if test="${activeAddBook}">active</c:if>" aria-current="page" href="addBook">Добавить книгу</a>
-        <a class="nav-link <c:if test="${activeListBook}">active</c:if>" href="listBooks">Список книг</a>
-        <a class="nav-link <c:if test="${activeListReaders}">active</c:if>" href="listReaders">Список читателей</a>
-        <a class="nav-link <c:if test="${activeTakeOnBook}">active</c:if>" href="takeOnBookForm">Выдать книгу</a>
-        <a class="nav-link <c:if test="${activeReturnBook}">active</c:if>" href="returnBookForm">Вернуть книгу</a>
-        <a class="nav-link <c:if test="${activeAdminPanel}">active</c:if>" href="adminForm">Панель администратора</a>
-        <a class="nav-link <c:if test="${activeEnter}">active</c:if>" href="loginForm">Войти</a>
-        <a class="nav-link <c:if test="${activeOut}">active</c:if>" href="logout">Выйти</a>
-        <a class="nav-link <c:if test="${activeRegistration}">active</c:if>"" href="registrationForm">Регистрация</a>
+        <c:choose>
+            <c:when test="${role eq 'ADMIN'}">
+                <a class="nav-link <c:if test="${activeAddBook}">active</c:if>" aria-current="page" href="addBook">Добавить книгу</a>
+                <a class="nav-link <c:if test="${activeListBook}">active</c:if>" href="listBooks">Список книг</a>
+                <a class="nav-link <c:if test="${activeListReaders}">active</c:if>" href="listReaders">Список читателей</a>
+                <a class="nav-link <c:if test="${activeTakeOnBook}">active</c:if>" href="takeOnBookForm">Выдать книгу</a>
+                <a class="nav-link <c:if test="${activeAdminPanel}">active</c:if>" href="adminForm">Панель администратора</a>
+                <a class="nav-link <c:if test="${activeOut}">active</c:if>" href="logout">Выйти</a>
+            </c:when>
+            <c:when test="${role eq 'MANAGER'}">
+                <a class="nav-link <c:if test="${activeAddBook}">active</c:if>" aria-current="page" href="addBook">Добавить книгу</a>
+                <a class="nav-link <c:if test="${activeListBook}">active</c:if>" href="listBooks">Список книг</a>
+                <a class="nav-link <c:if test="${activeTakeOnBook}">active</c:if>" href="takeOnBookForm">Выдать книгу</a>
+                <a class="nav-link <c:if test="${activeOut}">active</c:if>" href="logout">Выйти</a>
+            </c:when>
+            <c:when test="${role eq 'READER'}">
+                <a class="nav-link <c:if test="${activeListBook}">active</c:if>" href="listBooks">Список книг</a>
+                <a class="nav-link <c:if test="${activeTakeOnBook}">active</c:if>" href="takeOnBookForm">Выдать книгу</a>
+                <a class="nav-link <c:if test="${activeOut}">active</c:if>" href="logout">Выйти</a>
+            </c:when>
+            <c:otherwise>
+                <a class="nav-link <c:if test="${activeListBook}">active</c:if>" href="listBooks">Список книг</a>
+                <a class="nav-link <c:if test="${activeEnter}">active</c:if>" href="loginForm">Войти</a>
+                <a class="nav-link <c:if test="${activeRegistration}">active</c:if>" href="registrationForm">Регистрация</a>
+            </c:otherwise>
+        </c:choose>
+        
       </div>
     </div>
   </div>

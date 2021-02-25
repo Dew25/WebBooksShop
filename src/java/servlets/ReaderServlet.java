@@ -78,6 +78,7 @@ public class ReaderServlet extends HttpServlet {
             request.getRequestDispatcher("/loginForm").forward(request, response);
             return;
         }
+        request.setAttribute("role", userRolesFacade.getTopRoleForUser(user));
         String path = request.getServletPath();
         switch (path) {
             case "/takeOnBookForm":
@@ -95,7 +96,7 @@ public class ReaderServlet extends HttpServlet {
                     break;
                 }
                 Book book = bookFacade.find(Long.parseLong(bookId));
-                Reader reader = user.getReader();
+                Reader reader = readerFacade.find(user.getReader().getId());
                 History history = new History(book, reader, new GregorianCalendar().getTime(), null);
                 historyFacade.create(history);
                 request.setAttribute("info", "Книга "
