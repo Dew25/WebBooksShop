@@ -9,9 +9,17 @@ import entity.Book;
 import entity.History;
 import entity.Reader;
 import entity.User;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.stream.Stream;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -30,12 +38,14 @@ import session.UserRolesFacade;
  * @author Melnikov
  */
 @WebServlet(name = "ReaderServlet", urlPatterns = {
-   
-    "/takeOnBookForm",
-    "/takeOnBook",
-    "/returnBookForm",
-    "/returnBook",
-    
+    "/addToBasket",
+    "/removeBookFromBasket",
+    "/showBasket",
+    "/buyBooks",
+    "/purchasedBooks",
+    "/editProfile",
+    "/changeProfile",
+    "/readBook",
 })
 public class ReaderServlet extends HttpServlet {
     @EJB
@@ -81,55 +91,183 @@ public class ReaderServlet extends HttpServlet {
         request.setAttribute("role", userRolesFacade.getTopRoleForUser(user));
         String path = request.getServletPath();
         switch (path) {
-            case "/takeOnBookForm":
-                request.setAttribute("activeTakeOnBook", "true");
-                List<Book> listBooks = bookFacade.findAll();
-                request.setAttribute("listBooks", listBooks);
-                request.getRequestDispatcher(LoginServlet.pathToFile.getString("takeOnBook")).forward(request, response);
-                break;
-            case "/takeOnBook":
+            case "/addToBasket":
                 String bookId = request.getParameter("bookId");
-               
-                if("".equals(bookId) || bookId == null){
-                    request.setAttribute("info", "Выберите книгу или читателя.");
-                    request.getRequestDispatcher("/takeOnBookForm").forward(request, response);
+                if("".equals(bookId) || bookId==null){
+                    request.setAttribute("info", "Что то пошло не так");
+                    request.getRequestDispatcher("/listBooks").forward(request, response);
                     break;
                 }
                 Book book = bookFacade.find(Long.parseLong(bookId));
-                Reader reader = readerFacade.find(user.getReader().getId());
-                History history = new History(book, reader, new GregorianCalendar().getTime(), null);
-                historyFacade.create(history);
-                request.setAttribute("info", "Книга "
-                                                +history.getBook().getName()
-                                                +" выдана читателю "
-                                                +history.getReader().getFirstname() 
-                                                + " "
-                                                +history.getReader().getLastname());
-                request.getRequestDispatcher("/index.jsp").forward(request, response);
+                List<Book> basketList = (List<Book>) session.getAttribute("basketList");
+                if(basketList == null) basketList = new ArrayList<>();
+                basketList.add(book);
+                session.setAttribute("basketList", basketList);
+                request.setAttribute("basketListCount", basketList.size());
+                request.getRequestDispatcher("/listBooks").forward(request, response);
                 break;
-            case "/returnBookForm":
-                request.setAttribute("activeReturnBook", "true");
-                List<History> listHistoriesWithReadingBooks = historyFacade.findReadingBooks(user.getReader());
-                if(listHistoriesWithReadingBooks == null){
-                    request.setAttribute("info", "Нет читаемых книг");
-                    request.getRequestDispatcher(LoginServlet.pathToFile.getString("returnBook")).forward(request, response);
+            case "/removeBookFromBasket":
+                bookId = request.getParameter("bookId");
+                if("".equals(bookId) || bookId==null){
+                    request.setAttribute("info", "Что то пошло не так");
+                    request.getRequestDispatcher("/showBasket").forward(request, response);
                     break;
                 }
-                request.setAttribute("listHistoriesWithReadingBooks", listHistoriesWithReadingBooks);
-                request.getRequestDispatcher(LoginServlet.pathToFile.getString("returnBook")).forward(request, response);
+                book = bookFacade.find(Long.parseLong(bookId));
+                basketList = (List<Book>) session.getAttribute("basketList");
+                if(basketList.contains(book)){
+                    basketList.remove(book);
+                    session.setAttribute("basketList", basketList);
+                }
+                request.setAttribute("basketListCount", basketList.size());
+                request.getRequestDispatcher("/showBasket").forward(request, response);
                 break;
-            case "/returnBook":
-                String historyId = request.getParameter("historyId");
-                if("".equals(historyId) || historyId == null){
-                    request.setAttribute("info", "Выберите возвращаемую книгу.");
-                    request.getRequestDispatcher("/returnBookForm").forward(request, response);
+            case "/showBasket":
+                List<Book> listBooksInBasket = (List<Book>) session.getAttribute("basketList");
+                request.setAttribute("listBooksInBasket", listBooksInBasket);
+                if(listBooksInBasket == null || listBooksInBasket.isEmpty()){
+                    request.getRequestDispatcher("/listBooks").forward(request, response);
                     break;
                 }
-                history = historyFacade.find(Long.parseLong(historyId));
-                history.setReturnDate(new GregorianCalendar().getTime());
-                historyFacade.edit(history);
-                request.setAttribute("info", "Возвращена книга: "+ history.getBook().getName());
-                request.getRequestDispatcher(LoginServlet.pathToFile.getString("index")).forward(request, response);
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("showBasket")).forward(request, response);
+                break;
+            case "/buyBooks":
+                //Получаем список книг в корзине из сессии
+                listBooksInBasket = (List<Book>) session.getAttribute("basketList");
+                //Получаем массив отмеченных для покупки книг в корзине или нажатия ссылки при прочтении отрывка
+                String[] selectedBooks = request.getParameterValues("selectedBooks");
+                if(selectedBooks == null){
+                    request.setAttribute("info", "Чтобы купить выберите книгу.");
+                    request.getRequestDispatcher("/listBooks").forward(request, response);
+                    break;
+                }
+                int userMoney = user.getReader().getMoney();
+                List<Book> buyBooks = new ArrayList<>();
+                int totalPricePurchase = 0;
+                //Считаем стоимость покупаемых книг, которые отмечены в корзине
+                for(String selectedBookId : selectedBooks){
+                    Book b = bookFacade.find(Long.parseLong(selectedBookId));
+                    totalPricePurchase += b.getPrice();
+                    buyBooks.add(b);
+                }
+                if(totalPricePurchase > userMoney){
+                    request.setAttribute("info", "Недостаточно денег для покупки");
+                    request.getRequestDispatcher("/listBooks").forward(request, response);
+                    break;
+                }
+                //Покупаем книгу
+                for(Book buyBook : buyBooks){
+                    if(listBooksInBasket != null) listBooksInBasket.remove(buyBook); //если запрос пришел из корзины - удаляем из корзины купленную книгу
+                    historyFacade.create(new History(buyBook,user.getReader(), new GregorianCalendar().getTime(),null));
+                }
+                //Списываем у читателя деньги за купленные книги
+                Reader r = readerFacade.find(user.getReader().getId());
+                r.setMoney(r.getMoney()-totalPricePurchase);
+                readerFacade.edit(r);
+                //Редактируем данные вошедшего читателя в сессии
+                User bUser = userFacade.find(user.getId());
+                session.setAttribute("user", bUser);
+                
+                if(listBooksInBasket != null){
+                    //есои запрос из корзины
+                    request.setAttribute("listBooksInBasket", listBooksInBasket);
+                    request.setAttribute("basker", listBooksInBasket.size());
+                }
+                request.setAttribute("info", "Куплено книг: "+selectedBooks.length);
+                request.getRequestDispatcher("/listBooks").forward(request, response);
+                break;
+            case "/purchasedBooks":
+                request.setAttribute("activePurchasedBooks", "true");
+                List<Book> purchasedBooks = historyFacade.findPurchasedBook(user.getReader());
+                request.setAttribute("listBooks", purchasedBooks);
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("purchasedBooks")).forward(request, response);
+                break;
+            case "/editProfile":
+                user = (User) session.getAttribute("user");
+                request.setAttribute("user", user);
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("editProfile")).forward(request, response);
+                break;
+            case "/changeProfile":
+                User pUser = userFacade.find(user.getId());
+                Reader pReader = readerFacade.find(user.getReader().getId());
+                String firstname = request.getParameter("firstname");
+                if(pReader != null && !"".equals(firstname)) pReader.setFirstname(firstname);
+                String lastname = request.getParameter("lastname");
+                if(pReader != null && !"".equals(lastname)) pReader.setLastname(lastname);
+                String phone = request.getParameter("phone");
+                if(pReader != null && !"".equals(phone)) pReader.setPhone(phone);
+                String money = request.getParameter("money");
+                if(pReader != null && !"".equals(money)) pReader.setMoney(money);
+                String login = request.getParameter("login");
+                if(pUser != null && !"".equals(login)) pUser.setLogin(login);
+                String password = request.getParameter("password");
+                if(pUser != null && !"".equals(password)){
+                    //здесь шифруем пароль и получаем соль
+                    pUser.setPassword(password);
+                    //user.setSalt(salt);
+                    
+                }
+                readerFacade.edit(pReader);
+                pUser.setReader(pReader);
+                userFacade.edit(pUser);
+                session.setAttribute("user", null);//эта строка может быть избыточной
+                session.setAttribute("user", pUser);
+                session.setAttribute("info", "Профиль читателя изменен");
+                request.getRequestDispatcher("/editProfile").forward(request, response);
+                break;
+            case "/readBook":
+                bookId = request.getParameter("bookId");
+                if(bookId == null || "".equals(bookId)){
+                    request.setAttribute("info","Выберите книгу" );
+                    request.getRequestDispatcher("/purchasedBooks").forward(request, response);
+                }
+                book = bookFacade.find(Long.parseLong(bookId));
+                List<Book> buyBooksList = historyFacade.findPurchasedBook(user.getReader());
+                try {
+                    File file = new File(book.getText().getPath());
+                    FileReader fileReader = new FileReader(file);
+                    BufferedReader reader = new BufferedReader(fileReader);
+                    try (PrintWriter out = response.getWriter()) {
+                        out.println("<!DOCTYPE html>");
+                        out.println("<html>");
+                        out.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
+                        out.println("<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1\" crossorigin=\"anonymous\">");
+                        out.println("<head>");
+                        out.println("<title>"+book.getName()+"</title>");            
+                        out.println("</head>");
+                        out.println("<body>");
+                        out.println("<div class=\"container\">");
+                        out.println("</p>");
+                        if(buyBooksList.contains(book)){//если список купленных пользователем книг СОДЕРЖИТ книгу
+                            try(Stream<String> stream = Files.lines(file.toPath(), StandardCharsets.UTF_8)){
+                                stream.forEachOrdered(line -> out.print(line));
+                            }
+                        }else{//если список купленных пользователем книг НЕ СОДЕРЖИТ книгу
+                            try (Stream<String> lines = Files.lines (file.toPath(), StandardCharsets.UTF_8)){
+                                int numLine = 0;
+                                for (String line : (Iterable<String>) lines::iterator)
+                                {
+                                    out.print(line);
+                                    numLine++;
+                                    if(numLine > 200) break;
+                                }
+                            }
+                            out.println("... ");
+                            out.println("<br>");
+                            out.println("<p class=\"w-100 d-flex justify-content-center\"><a href=\"buyBooks?selectedBooks="+book.getId()+"\">(Для продолжения чтения купите книгу).</a></p>");
+                            out.println("</p>");
+                        }
+                        out.println("</p>");
+                        out.println("</div>");
+                        out.println("<script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js\" integrity=\"sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW\" crossorigin=\"anonymous\"></script>");
+                        out.println("</body>");
+                        out.println("</html>");
+                    }
+                    
+                } catch (Exception e) {
+                    request.setAttribute("info", "Невозможно прочесть файл");
+                    request.getRequestDispatcher("/listBooks").forward(request, response);
+                }
                 break;
         }
     }

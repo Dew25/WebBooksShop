@@ -5,6 +5,7 @@
  */
 package servlets;
 
+import entity.Reader;
 import entity.Role;
 import entity.User;
 import entity.UserRoles;
@@ -34,6 +35,8 @@ import session.UserRolesFacade;
     "/listReaders",
     "/adminForm",
     "/setRole",
+    "/editUser",
+    "/changeUser"
 })
 public class AdminServlet extends HttpServlet {
 @EJB
@@ -77,6 +80,7 @@ public class AdminServlet extends HttpServlet {
             request.getRequestDispatcher("/loginForm").forward(request, response);
             return;
         }
+        request.setAttribute("role", userRolesFacade.getTopRoleForUser(user));
         String path = request.getServletPath();
         switch (path) {
             case "/listReaders":
@@ -127,6 +131,44 @@ public class AdminServlet extends HttpServlet {
                     request.setAttribute("info", "Изменить роль невозможно");
                 }
                 request.getRequestDispatcher("/adminForm").forward(request, response);
+                break;
+            case  "/editUser":
+                userId = request.getParameter("userId");
+                User editUser = userFacade.find(Long.parseLong(userId));
+                request.setAttribute("user", editUser);
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("editUserForm")).forward(request, response);
+                break;
+            case "/changeUser":
+                userId = request.getParameter("userId");
+                User pUser = userFacade.find(Long.parseLong(userId));
+                if("admin".equals(pUser.getLogin()) && !"admin".equals(user.getLogin())){
+                    request.setAttribute("info", "Вы не имеете прав на изменение данных этого пользователя");
+                    request.getRequestDispatcher("/editUser").forward(request, response);
+                    break;
+                }
+                Reader pReader = readerFacade.find(pUser.getReader().getId());
+                String firstname = request.getParameter("firstname");
+                if(pReader != null && !"".equals(firstname)) pReader.setFirstname(firstname);
+                String lastname = request.getParameter("lastname");
+                if(pReader != null && !"".equals(lastname)) pReader.setLastname(lastname);
+                String phone = request.getParameter("phone");
+                if(pReader != null && !"".equals(phone)) pReader.setPhone(phone);
+                String money = request.getParameter("money");
+                if(pReader != null && !"".equals(money)) pReader.setMoney(money);
+                String login = request.getParameter("login");
+                if(pUser != null && !"".equals(login)) pUser.setLogin(login);
+                String password = request.getParameter("password");
+                if(pUser != null && !"".equals(password)){
+                    //здесь шифруем пароль и получаем соль
+                    pUser.setPassword(password);
+                    //user.setSalt(salt);
+                    
+                }
+                readerFacade.edit(pReader);
+                pUser.setReader(pReader);
+                userFacade.edit(pUser);
+                request.setAttribute("info", "Данные пользователя изменены");
+                request.getRequestDispatcher("/editUser").forward(request, response);
                 break;
         }
     }

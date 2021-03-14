@@ -5,6 +5,7 @@
  */
 package session;
 
+import entity.Book;
 import entity.History;
 import entity.Reader;
 import java.util.List;
@@ -34,6 +35,16 @@ public class HistoryFacade extends AbstractFacade<History> {
     public List<History> findReadingBooks(Reader reader) {
         try {
             return em.createQuery("SELECT h FROM History h WHERE h.returnDate = NULL AND h.reader = :reader")
+                    .setParameter("reader", reader)
+                    .getResultList();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public List<Book> findPurchasedBook(Reader reader) {
+        try {
+            return em.createQuery("SELECT h.book FROM History h WHERE h.reader = :reader")
                     .setParameter("reader", reader)
                     .getResultList();
         } catch (Exception e) {

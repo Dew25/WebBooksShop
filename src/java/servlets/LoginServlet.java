@@ -60,9 +60,8 @@ public static final ResourceBundle pathToFile = ResourceBundle.getBundle("proper
         
     @Override
     public void init() throws ServletException {
-        
-       if(userFacade.findAll().size()>0) return;
-        Reader reader = new Reader("Juri", "Melnikov", "56569987");
+        if(userFacade.count() > 0) return;
+        Reader reader = new Reader("Juri", "Melnikov", "56569987",1000);
         readerFacade.create(reader);
         User user = new User("admin", "12345", reader);
         userFacade.create(user);
@@ -107,25 +106,9 @@ public static final ResourceBundle pathToFile = ResourceBundle.getBundle("proper
         String path = request.getServletPath();
         switch (path) {
             case "/index":
-                Map<Integer,List<String>> coversMap = new HashMap<>();
-                List<String> listPaths = new ArrayList<>();
-                List<Cover> listCovers = coverFacade.findAll();
-                Integer key = 0;
-                int n = 5;
-                while(listCovers.size()>0){
-                    listPaths = listCovers.stream()
-                            .map(cover -> cover.getPath())
-                            .limit(5)
-                            .collect(Collectors.toList());
-                    listCovers.removeIf(x -> )
-                            .filter(x -> x.
-                            .map(x -> listCovers.remove(x))
-                            .collect(Collectors.toList());
-                    coversMap.put(key,listPaths);
-                    key++;
-                }
-                request.setAttribute("coversMap", coversMap);
-                request.getRequestDispatcher(LoginServlet.pathToFile.getString("login")).forward(request, response);
+                List<Book> listBooks = bookFacade.findAll();
+                request.setAttribute("listBooks", listBooks);
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("index")).forward(request, response);
                 break;
             case "/loginForm":
                 request.setAttribute("activeEnter", "true");
@@ -143,6 +126,11 @@ public static final ResourceBundle pathToFile = ResourceBundle.getBundle("proper
                 }
                 user = userFacade.findByLogin(login);
                 if(user == null){
+                    request.setAttribute("info","Нет такого пользователя");
+                    request.getRequestDispatcher("/loginForm").forward(request, response);
+                    break;
+                }
+                if(!password.equals(user.getPassword())){
                     request.setAttribute("info","Нет такого пользователя");
                     request.getRequestDispatcher("/loginForm").forward(request, response);
                     break;
@@ -171,11 +159,13 @@ public static final ResourceBundle pathToFile = ResourceBundle.getBundle("proper
                 String firstname = request.getParameter("firstname");
                 String lastname = request.getParameter("lastname");
                 String phone = request.getParameter("phone");
+                String money = request.getParameter("money");
                 login = request.getParameter("login");
                 password = request.getParameter("password");
                 if("".equals(firstname) || firstname == null
                        || "".equals(lastname) || lastname == null
                        || "".equals(phone) || phone == null
+                       || "".equals(money) || money == null
                        || "".equals(login) || login == null
                        || "".equals(password) || password == null){
                     request.setAttribute("info","Заполните все поля");
@@ -183,7 +173,7 @@ public static final ResourceBundle pathToFile = ResourceBundle.getBundle("proper
                     break;
                 }
                 
-                Reader reader = new Reader(firstname, lastname, phone);
+                Reader reader = new Reader(firstname, lastname, phone, money);
                 readerFacade.create(reader);
                 user = new User(login, password, reader);
                 userFacade.create(user);
@@ -198,7 +188,14 @@ public static final ResourceBundle pathToFile = ResourceBundle.getBundle("proper
                 break; 
             case "/listBooks":
                 request.setAttribute("activeListBook", "true");
-                List<Book> listBooks = bookFacade.findAll();
+                listBooks = null;
+                try {
+                    listBooks = bookFacade.findAll();
+                } catch (Exception e) {
+                    listBooks = new ArrayList<>();
+                }
+                List<Book> listBooksInBasket = (List<Book>) session.getAttribute("basketList");
+                if(listBooksInBasket != null) request.setAttribute("basket", listBooksInBasket.size());
                 request.setAttribute("listBooks", listBooks);
                 request.getRequestDispatcher(LoginServlet.pathToFile.getString("listBooks")).forward(request, response);
                 break;    

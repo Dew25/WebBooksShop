@@ -6,6 +6,7 @@
 package servlets;
 
 import entity.Cover;
+import entity.Text;
 import entity.User;
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import session.CoverFacade;
+import session.TextFacade;
 import session.UserRolesFacade;
 
 /**
@@ -31,13 +33,16 @@ import session.UserRolesFacade;
  * @author Melnikov
  */
 @WebServlet(name = "UploadServlet", urlPatterns = {
+    "/uploadCoverForm",
     "/uploadCover",
-    
+    "/uploadTextForm",
+    "/uploadText",
 })
 @MultipartConfig
 public class UploadServlet extends HttpServlet {
     @EJB UserRolesFacade userRolesFacade;
     @EJB CoverFacade coverFacade;
+    @EJB TextFacade textFacade;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -70,26 +75,67 @@ public class UploadServlet extends HttpServlet {
             return;
         }
         request.setAttribute("role", userRolesFacade.getTopRoleForUser(user));
-        String uploadFolder = "D:\\UploadJPTVR19WebLibrary";
-        List<Part> fileParts = request
-                .getParts()
-                .stream()
-                .filter(part -> "file".equals(part.getName()))
-                .collect(Collectors.toList());
-        StringBuilder sb = new StringBuilder();
-        for(Part filePart : fileParts){
-           sb.append(uploadFolder+File.separator + getFileName(filePart));
-           File file = new File(sb.toString());
-           file.mkdirs();
-           try(InputStream fileContent = filePart.getInputStream()){
-               Files.copy(fileContent, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
-           }
+        String uploadFolder = LoginServlet.pathToFile.getString("dir");
+        String path = request.getServletPath();
+        switch (path) {
+            case "/uploadCoverForm":
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("uploadCoverForm")).forward(request, response);
+                break;
+            case "/uploadCover"://Можно отправлять несколько файлов в одной форме
+                List<Part> fileParts = request
+                        .getParts()
+                        .stream()
+                        .filter(part -> "file".equals(part.getName()))
+                        .collect(Collectors.toList());
+                StringBuilder sb = new StringBuilder();
+                for(Part filePart : fileParts){
+                    sb.append(uploadFolder)//указана в файле свойств
+                      .append(File.separator)
+                      .append("images")//директория с обложками
+                      .append(File.separator)
+                      .append(getFileName(filePart));// имя загружаемого файла
+                    File file = new File(sb.toString());
+                    file.mkdirs();
+                    try(InputStream fileContent = filePart.getInputStream()){
+                       Files.copy(fileContent, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    }
+                    String description = request.getParameter("description");
+                    Cover cover = new Cover(description,sb.toString());
+                    coverFacade.create(cover);
+                }
+                request.setAttribute("info", "Файлы загруженны");
+                request.getRequestDispatcher("/addBook").forward(request, response);
+                break;
+            case "/uploadTextForm":
+                request.getRequestDispatcher(LoginServlet.pathToFile.getString("uploadTextForm")).forward(request, response);
+                break;
+            case "/uploadText"://Можно отправлять несколько файлов в одной форме
+                fileParts = request
+                        .getParts()
+                        .stream()
+                        .filter(part -> "file".equals(part.getName()))
+                        .collect(Collectors.toList());
+                sb = new StringBuilder();
+                for(Part filePart : fileParts){
+                    sb.append(uploadFolder)//указана в файле свойств
+                      .append(File.separator)
+                      .append("texts")//директория с текстами
+                      .append(File.separator)
+                      .append(getFileName(filePart)); // имя загружаемого файла
+                    File file = new File(sb.toString());
+                    file.mkdirs();
+                    try(InputStream fileContent = filePart.getInputStream()){
+                       Files.copy(fileContent, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    }
+                    String description = request.getParameter("description");
+                    Text text = new Text(description,sb.toString());
+                    textFacade.create(text);
+                }
+                request.setAttribute("info", "Файлы загружены");
+                request.getRequestDispatcher("/addBook").forward(request, response);
+                break;
+            
         }
-        String description = request.getParameter("description");
-        Cover cover = new Cover(description,sb.toString());
-        coverFacade.create(cover);
-        request.setAttribute("info", "Файл загружен");
-        request.getRequestDispatcher("/addBook").forward(request, response);
     }
     private String getFileName(Part part){
         final String partHeader = part.getHeader("content-disposition");

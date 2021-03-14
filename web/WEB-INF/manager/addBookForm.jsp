@@ -7,7 +7,8 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
     <h3 class="w-100 text-center my-5 ">Добавить новую книгу</h3>
-    <div class="row w-100"><a href="uploadForm" class="col-4 mx-auto">Загрузить обложку для книги</a></p>
+    <div class="row w-100"><a href="uploadCoverForm" class="col-4 mx-auto">Загрузить обложку для книги</a></p>
+    <div class="row w-100"><a href="uploadTextForm" class="col-4 mx-auto">Загрузить текст для книги</a></p>
     <form action="createBook" method="POST">
       <div class="row w-50 my-2 mx-auto">
         <div class="col-4 text-end">
@@ -34,6 +35,22 @@
         </div>
       </div>
       <div class="row w-50 my-2 mx-auto">
+        <div class="col-4 text-end">   
+            ISBN: 
+        </div>
+        <div class="col-8 text-start">  
+          <input class="col-4" type="text" name="isbn">
+        </div>
+      </div>
+      <div class="row w-50 my-2 mx-auto">
+        <div class="col-4 text-end">   
+            Цена: 
+        </div>
+        <div class="col-8 text-start">  
+          <input class="col-4" type="text" name="price">
+        </div>
+      </div>
+      <div class="row w-50 my-2 mx-auto">
         <div class="col-4 text-end">
             Обложка 
         </div>
@@ -42,6 +59,19 @@
             <option selected>Open this select menu</option>
             <c:forEach var="cover" items="${listCovers}">
                   <option value="${cover.id}">${cover.description}</option>
+            </c:forEach>
+          </select>
+        </div>
+      </div>
+      <div class="row w-50 my-2 mx-auto">
+        <div class="col-4 text-end">
+            Текст книги 
+        </div>
+        <div class="col-8 text-start">     
+          <select class="form-select" name="textId" aria-label="Выбрать файл с текстом">
+            <option selected>Open this select menu</option>
+            <c:forEach var="text" items="${listTexts}">
+                  <option value="${text.id}">${text.description}</option>
             </c:forEach>
           </select>
         </div>

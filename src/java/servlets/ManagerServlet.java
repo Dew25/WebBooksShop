@@ -7,10 +7,9 @@ package servlets;
 
 import entity.Book;
 import entity.Cover;
-import entity.Reader;
+import entity.Text;
 import entity.User;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
@@ -23,6 +22,7 @@ import session.BookFacade;
 import session.CoverFacade;
 import session.HistoryFacade;
 import session.ReaderFacade;
+import session.TextFacade;
 import session.UserFacade;
 import session.UserRolesFacade;
 
@@ -33,7 +33,7 @@ import session.UserRolesFacade;
 @WebServlet(name = "ManagerServlet", urlPatterns = {
      "/addBook",
     "/createBook",
-    "/uploadForm",
+   
     
 
 })
@@ -48,6 +48,7 @@ public class ManagerServlet extends HttpServlet {
     private UserFacade userFacade;
     @EJB private UserRolesFacade userRolesFacade;
     @EJB private CoverFacade coverFacade;
+    @EJB private TextFacade textFacade;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -57,25 +58,29 @@ public class ManagerServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    protected void processRequest(HttpServletRequest request, 
+            HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession(false);
         if(session == null){
-            request.setAttribute("info", "У вас нет права использовать этот ресурс. Войдите!");
+            request.setAttribute("info", 
+                    "У вас нет права использовать этот ресурс. Войдите!");
             request.getRequestDispatcher("/loginForm").forward(request, response);
             return;
         }
         User user = (User) session.getAttribute("user");
         if(user == null){
-            request.setAttribute("info", "У вас нет права использовать этот ресурс. Войдите!");
+            request.setAttribute("info", 
+                    "У вас нет права использовать этот ресурс. Войдите!");
             request.getRequestDispatcher("/loginForm").forward(request, response);
             return;
         }
         boolean isRole = userRolesFacade.isRole("MANAGER",user);
         if(!isRole){
-            request.setAttribute("info", "У вас нет права использовать этот ресурс. Войдите с соответствующими правами!");
+            request.setAttribute("info", 
+            "У вас нет права использовать этот ресурс. Войдите с соответствующими правами!");
             request.getRequestDispatcher("/loginForm").forward(request, response);
             return;
         }
@@ -84,19 +89,33 @@ public class ManagerServlet extends HttpServlet {
         switch (path) {
             case "/addBook":
                 List<Cover> listCovers = coverFacade.findAll();
+                List<Text> listTexts = textFacade.findAll();
                 request.setAttribute("listCovers", listCovers);
+                request.setAttribute("listTexts", listTexts);
                 request.setAttribute("activeAddBook", "true");
-                request.getRequestDispatcher(LoginServlet.pathToFile.getString("addBook")).forward(request, response);
+                request.getRequestDispatcher(
+                        LoginServlet.pathToFile.getString("addBook"))
+                        .forward(request, response);
                 break;
             case "/createBook":
                 String name = request.getParameter("name");
                 String author = request.getParameter("author");
                 String publishedYear = request.getParameter("publishedYear");
                 String isbn = request.getParameter("isbn");
+                String price = request.getParameter("price");
                 String coverId = request.getParameter("coverId");
-                if("".equals(coverId) || coverId==null){
+                String textId = request.getParameter("textId");
+                if(coverId==null || "".equals(coverId)  
+                       || name==null || "".equals(name) 
+                       || author==null || "".equals(author) 
+                       || publishedYear==null || "".equals(publishedYear) 
+                       || isbn==null || "".equals(isbn) 
+                       || price==null|| "".equals(price) 
+                       || coverId==null || "".equals(coverId) 
+                       || textId==null || "".equals(textId)){
                     request.setAttribute("info", "Выберите файл обложки");
-                    request.getRequestDispatcher("/addBook").forward(request, response);
+                    request.getRequestDispatcher("/addBook")
+                            .forward(request, response);
                 }
                 request.setAttribute("info", 
                         "Добавлена книга "+name+
@@ -104,14 +123,21 @@ public class ManagerServlet extends HttpServlet {
                         ", год издания: "+ publishedYear
                 );
                 Cover cover = coverFacade.find(Long.parseLong(coverId));
-                Book book = new Book(name, author, Integer.parseInt(publishedYear), isbn, cover);
+                Text text = textFacade.find(Long.parseLong(textId));
+                Book book = new Book(
+                        name, 
+                        author, 
+                        Integer.parseInt(publishedYear), 
+                        isbn, 
+                        price, 
+                        cover,
+                        text
+                );
                 bookFacade.create(book);
-                request.getRequestDispatcher(LoginServlet.pathToFile.getString("index")).forward(request, response);
+                request.getRequestDispatcher("/listBooks")
+                        .forward(request, response);
                 break;
-            case "/uploadForm":
-               
-                request.getRequestDispatcher(LoginServlet.pathToFile.getString("uploadForm")).forward(request, response);
-                break;
+            
             
             
         }

@@ -3,26 +3,15 @@
     Created on : Nov 25, 2020, 10:14:04 AM
     Author     : Melnikov
 --%>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-
 <p class="w-100 text-center my-5">Добро пожаловать в нашу библиотеку!</p>
-<div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
-  <div class="carousel-inner">
-    <c:forEach var="covers" items="${coversMap}">
-        <div class="carousel-item active">
-          <c:forEach var="imgPath" items="${covers.value}">
-            <img src="insertCover/imgPath" class="w-5 " alt="..." style="width: 8rem; height: 10rem">
-          </c:forEach>
-    </div>
+<div class="w-100 d-flex justify-content-center m-2">
+    <c:forEach var="book" items="${listBooks}">
+      <div class="card m-2" style="max-width: 12rem; max-height: 18rem" >
+        <img src="insertFile/${book.cover.path}" class="card-img d-block" alt="..." style="min-width: 12rem; min-height: 18rem">
+      </div>
     </c:forEach>
-    <div class="carousel-item active">
-      <img src="insertCover/D:\UploadJPTVR19WebLibrary\voina-i-mir-cover.jpg" class="w-5 " alt="..." style="width: 8rem; height: 10rem">
-      <img src="insertCover/D:\UploadJPTVR19WebLibrary\voina-i-mir-cover.jpg" class=" w-5" alt="..." style="width: 8rem; height: 10rem">
-      <img src="insertCover/D:\UploadJPTVR19WebLibrary\voina-i-mir-cover.jpg" class=" w-5" alt="..." style="width: 8rem; height: 10rem">
-    </div>
-    
-  </div>
 </div>
     
     

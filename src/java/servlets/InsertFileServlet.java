@@ -10,7 +10,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URLDecoder;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -23,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author Melnikov
  */
 @WebServlet(name = "InsertFileServlet", urlPatterns = {
-    "/insertCover/*"
+    "/insertFile/*"
 })
 public class InsertFileServlet extends HttpServlet {
     static final int DEFAULT_BUFFER_SIZE = 10240;

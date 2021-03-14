@@ -7,9 +7,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
-<h3 class="w-100 my-5 text-center">Список книг</h3>
+<h3 class="w-100 my-5 text-center">Список купленных книг</h3>
 
-<div class="w-100 d-flex justify-content-center border">
+<div class="w-100 d-flex justify-content-center  border">
   <c:forEach var="book" items="${listBooks}">
     <div class="card m-2 mx-auto border" style="max-width: 12rem; max-height: 25rem">
         <img src="insertFile/${book.cover.path}" class="card-img-top" style="max-width: 12rem; max-height: 15rem" alt="...">
@@ -19,7 +19,6 @@
           <p class="card-text">${book.publishedYear}</p>
           <p class="d-inline">
             <a href="readBook?bookId=${book.id}" class="link text-nowrap">Читать</a>
-            <a href="addToBasket?bookId=${book.id}" class="link text-nowrap">В корзину</a>
           </p>
         </div>
     </div>

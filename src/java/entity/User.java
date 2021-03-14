@@ -72,6 +72,7 @@ public class User implements Serializable{
                 + ", password=" + password 
                 + ", reader=" + reader.getFirstname()
                 + " " + reader.getLastname()
+                + ", money=" + reader.getMoneyStr()
                 + '}';
     }
 

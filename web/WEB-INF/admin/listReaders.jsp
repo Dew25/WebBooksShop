@@ -14,7 +14,7 @@
               <th>Id</th>
               <th>Имя</th>
               <th>Фамилия</th>
-              <th>email</th>
+              <th>Деньги</th>
               <th>Логин</th>
               <th>Роль1</th>
               <th>Роль2</th>
@@ -29,7 +29,7 @@
                         <td>${entry.key.id}</td>
                         <td>${entry.key.reader.firstname}</td>
                         <td>${entry.key.reader.lastname}</td>
-                        <td><!--{entry.key.reader.email}--></td>
+                        <td>${entry.key.reader.money/100}</td>
                         <td>${entry.key.login}</td>
                         <td><c:if test="${entry.value[0] ne ''}">${entry.value[0]}</c:if></td>
                         <td><c:if test="${entry.value[1] ne ''}">${entry.value[1]}</c:if></td>

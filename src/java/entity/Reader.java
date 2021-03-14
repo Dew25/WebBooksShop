@@ -28,16 +28,31 @@ public class Reader implements Serializable{
     private String lastname;
     @Column(unique = true)
     private String phone;
+    private int money;
 
     public Reader() {
     }
 
-    public Reader(String firstname, String lastname, String phone) {
+    public Reader(String firstname, String lastname, String phone, int money) {
         this.firstname = firstname;
         this.lastname = lastname;
         this.phone = phone;
+        this.money = money;
+    }
+    public Reader(String firstname, String lastname, String phone, String money) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.phone = phone;
+        this.setMoney(money);
+    }
+    public Reader(String firstname, String lastname, String phone, double money) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.phone = phone;
+        this.setMoney(money);
     }
 
+    
     public String getFirstname() {
         return firstname;
     }
@@ -65,11 +80,15 @@ public class Reader implements Serializable{
     @Override
     public String toString() {
         return "Reader{" 
-                + "firstname=" + firstname 
+                + "id=" + id 
+                + ", firstname=" + firstname 
                 + ", lastname=" + lastname 
                 + ", phone=" + phone 
+                + ", money=" + money 
                 + '}';
     }
+
+    
 
     public Long getId() {
         return id;
@@ -115,6 +134,33 @@ public class Reader implements Serializable{
         }
         return true;
     }
+
+    public int getMoney() {
+        return money;
+    }
+    public String getMoneyStr() {
+        Double dMoney = (double)this.money/100;
+        return dMoney.toString();
+    }
+    public double getMoneyDouble() {
+        return (double)this.money/100;
+    }
     
+
+    public void setMoney(int money) {
+        this.money = money;
+    }
+    public void setMoney(String money) throws NumberFormatException {
+        money = money.trim().replaceAll(",", ".");
+        try {
+            double dMoney = Double.parseDouble(money);
+            this.money = (int)(dMoney * 100);
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("Неправильный формат числа");
+        }
+    }
+    public void setMoney(double money) {
+        this.money = (int)(money * 100);
+    }
     
 }

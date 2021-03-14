@@ -28,20 +28,46 @@ public class Book implements Serializable{
     private String author;
     private Integer publishedYear;
     private String isbn;
+    private int price;
     @OneToOne
     private Cover cover;
+    @OneToOne
+    private Text text;
     
 
     public Book() {
     }
 
-    public Book(String name, String author, Integer publishedYear, String isbn, Cover cover) {
+    public Book(String name, String author, Integer publishedYear, String isbn, int price, Cover cover, Text text) {
         this.name = name;
         this.author = author;
         this.publishedYear = publishedYear;
         this.isbn = isbn;
+        this.price = price;
         this.cover = cover;
+        this.text = text;
     }
+    
+    public Book(String name, String author, Integer publishedYear, String isbn, double price, Cover cover, Text text) {
+        this.name = name;
+        this.author = author;
+        this.publishedYear = publishedYear;
+        this.isbn = isbn;
+        this.setPriceDouble(price);
+        this.cover = cover;
+        this.text = text;
+    }
+    public Book(String name, String author, Integer publishedYear, String isbn, String price, Cover cover, Text text) {
+        this.name = name;
+        this.author = author;
+        this.publishedYear = publishedYear;
+        this.isbn = isbn;
+        this.setPriceStr(price);
+        this.cover = cover;
+        this.text = text;
+    }
+
+    
 
    
 
@@ -85,6 +111,7 @@ public class Book implements Serializable{
                 + ", author=" + author 
                 + ", publishedYear=" + publishedYear 
                 + ", isbn=" + isbn 
+                + ", price=" + price 
                 + '}';
     }
 
@@ -143,6 +170,41 @@ public class Book implements Serializable{
 
     public void setCover(Cover cover) {
         this.cover = cover;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+    public double getPriceDouble() {
+        return (double)this.price/100;
+    }
+    public String getPriceStr() {
+        Double dPrice = (double)this.price/100;
+        return dPrice.toString();
+    }
+
+    public void setPriceStr(String price) {
+        price = price.trim().replaceAll(",", ".");
+        try {
+            double dPrice = Double.parseDouble(price);
+            this.price = (int)(dPrice * 100);
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("Неправильный формат числа");
+        }
+    }
+    public void setPriceDouble(double price) {
+        this.price = (int)(price * 100);
+    }
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    public Text getText() {
+        return text;
+    }
+
+    public void setText(Text text) {
+        this.text = text;
     }
     
     
