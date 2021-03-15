@@ -89,6 +89,10 @@ public class ReaderServlet extends HttpServlet {
             return;
         }
         request.setAttribute("role", userRolesFacade.getTopRoleForUser(user));
+        List<Book> basketList = (List<Book>) session.getAttribute("basketList");
+        if(basketList != null){
+            request.setAttribute("basketListCount", basketList.size());
+        }
         String path = request.getServletPath();
         switch (path) {
             case "/addToBasket":
@@ -99,7 +103,7 @@ public class ReaderServlet extends HttpServlet {
                     break;
                 }
                 Book book = bookFacade.find(Long.parseLong(bookId));
-                List<Book> basketList = (List<Book>) session.getAttribute("basketList");
+                basketList = (List<Book>) session.getAttribute("basketList");
                 if(basketList == null) basketList = new ArrayList<>();
                 basketList.add(book);
                 session.setAttribute("basketList", basketList);

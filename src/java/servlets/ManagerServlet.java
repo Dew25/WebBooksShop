@@ -85,6 +85,10 @@ public class ManagerServlet extends HttpServlet {
             return;
         }
         request.setAttribute("role", userRolesFacade.getTopRoleForUser(user));
+        List<Book> basketList = (List<Book>) session.getAttribute("basketList");
+        if(basketList != null){
+            request.setAttribute("basketListCount", basketList.size());
+        }
         String path = request.getServletPath();
         switch (path) {
             case "/addBook":

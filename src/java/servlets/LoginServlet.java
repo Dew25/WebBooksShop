@@ -6,18 +6,14 @@
 package servlets;
 
 import entity.Book;
-import entity.Cover;
 import entity.Reader;
 import entity.Role;
 import entity.User;
 import entity.UserRoles;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -99,6 +95,10 @@ public static final ResourceBundle pathToFile = ResourceBundle.getBundle("proper
         User user=null;
         if(session != null){
             user = (User) session.getAttribute("user");
+            List<Book> basketList = (List<Book>) session.getAttribute("basketList");
+            if(basketList != null){
+                request.setAttribute("basketListCount", basketList.size());
+            }
         }
         
         request.setAttribute("role", userRolesFacade.getTopRoleForUser(user));
@@ -188,6 +188,7 @@ public static final ResourceBundle pathToFile = ResourceBundle.getBundle("proper
                 break; 
             case "/listBooks":
                 request.setAttribute("activeListBook", "true");
+                
                 listBooks = null;
                 try {
                     listBooks = bookFacade.findAll();

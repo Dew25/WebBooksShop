@@ -5,6 +5,7 @@
  */
 package servlets;
 
+import entity.Book;
 import entity.Reader;
 import entity.Role;
 import entity.User;
@@ -81,6 +82,10 @@ public class AdminServlet extends HttpServlet {
             return;
         }
         request.setAttribute("role", userRolesFacade.getTopRoleForUser(user));
+        List<Book> basketList = (List<Book>) session.getAttribute("basketList");
+        if(basketList != null){
+            request.setAttribute("basketListCount", basketList.size());
+        }
         String path = request.getServletPath();
         switch (path) {
             case "/listReaders":
