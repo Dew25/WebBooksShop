@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import session.BookFacade;
 import session.CoverFacade;
+import session.HistoryFacade;
 import session.ReaderFacade;
 import session.RoleFacade;
 import session.UserFacade;
@@ -33,6 +34,7 @@ import session.UserRolesFacade;
  * @author jvm
  */
 @WebServlet(name = "LoginServlet", loadOnStartup = 1, urlPatterns = {
+    "/index.jsp",
     "/index",
     "/loginForm",
     "/login",
@@ -51,6 +53,7 @@ public class LoginServlet extends HttpServlet {
 @EJB private RoleFacade roleFacade;
 @EJB private UserRolesFacade userRolesFacade;
 @EJB private CoverFacade coverFacade;
+@EJB private HistoryFacade historyFacade;
 
 public static final ResourceBundle pathToFile = ResourceBundle.getBundle("property.pathToFile");
         
@@ -91,6 +94,7 @@ public static final ResourceBundle pathToFile = ResourceBundle.getBundle("proper
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
+        List<Book> purchasedBooks = null;
         HttpSession session = request.getSession(false);
         User user=null;
         if(session != null){
@@ -99,6 +103,7 @@ public static final ResourceBundle pathToFile = ResourceBundle.getBundle("proper
             if(basketList != null){
                 request.setAttribute("basketListCount", basketList.size());
             }
+            if(user != null) purchasedBooks = historyFacade.findPurchasedBook(user.getReader());
         }
         
         request.setAttribute("role", userRolesFacade.getTopRoleForUser(user));
@@ -139,17 +144,17 @@ public static final ResourceBundle pathToFile = ResourceBundle.getBundle("proper
                 session.setAttribute("user", user);
                 request.setAttribute("info","Вы вошли как "+ user.getLogin());
                 request.setAttribute("role", userRolesFacade.getTopRoleForUser(user));
-                
-                request.getRequestDispatcher(LoginServlet.pathToFile.getString("index")).forward(request, response);
+                request.getRequestDispatcher("/index").forward(request, response);
                 break;
             case "/logout":
                 session = request.getSession(false);
                 if(session != null){
                    session.invalidate();
                 }
+                request.setAttribute("basketListCount", 0);
                 request.setAttribute("info", "Вы вышли");
                 request.setAttribute("role", userRolesFacade.getTopRoleForUser(null));
-                request.getRequestDispatcher(LoginServlet.pathToFile.getString("index")).forward(request, response);
+                request.getRequestDispatcher("/index").forward(request, response);
                 break;
             case "/registrationForm":
                 request.setAttribute("activeRegistration", "true");
@@ -184,7 +189,7 @@ public static final ResourceBundle pathToFile = ResourceBundle.getBundle("proper
                 request.setAttribute("info", 
                         "Читатель "+user.getLogin()+" добавлен"     
                 );
-                request.getRequestDispatcher(LoginServlet.pathToFile.getString("index")).forward(request, response);
+                request.getRequestDispatcher("/index").forward(request, response);
                 break; 
             case "/listBooks":
                 request.setAttribute("activeListBook", "true");
@@ -192,11 +197,13 @@ public static final ResourceBundle pathToFile = ResourceBundle.getBundle("proper
                 listBooks = null;
                 try {
                     listBooks = bookFacade.findAll();
+                    if(purchasedBooks != null){
+                        listBooks.removeAll(purchasedBooks);
+                    }
                 } catch (Exception e) {
                     listBooks = new ArrayList<>();
                 }
-                List<Book> listBooksInBasket = (List<Book>) session.getAttribute("basketList");
-                if(listBooksInBasket != null) request.setAttribute("basket", listBooksInBasket.size());
+                
                 request.setAttribute("listBooks", listBooks);
                 request.getRequestDispatcher(LoginServlet.pathToFile.getString("listBooks")).forward(request, response);
                 break;    
