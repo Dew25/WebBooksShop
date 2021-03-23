@@ -9,9 +9,9 @@
 
 <h3 class="w-100 my-5 text-center">Список купленных книг</h3>
 
-<div class="w-100 d-flex justify-content-center  border">
+<div class="w-100 d-flex justify-content-center m-2">
   <c:forEach var="book" items="${listBooks}">
-    <div class="card m-2 mx-auto border" style="max-width: 12rem; max-height: 25rem">
+    <div class="card m-2 border" style="max-width: 12rem; max-height: 25rem">
         <img src="insertFile/${book.cover.path}" class="card-img-top" style="max-width: 12rem; max-height: 15rem" alt="...">
         <div class="card-body">
           <h5 class="card-title">${book.name}</h5>
@@ -23,6 +23,4 @@
         </div>
     </div>
   </c:forEach>
-        
-    
 </div>

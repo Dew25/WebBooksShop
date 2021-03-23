@@ -160,8 +160,8 @@ public class AdminServlet extends HttpServlet {
                 if(pReader != null && !"".equals(phone)) pReader.setPhone(phone);
                 String money = request.getParameter("money");
                 if(pReader != null && !"".equals(money)) pReader.setMoney(money);
-                String login = request.getParameter("login");
-                if(pUser != null && !"".equals(login)) pUser.setLogin(login);
+//                String login = request.getParameter("login");
+//                if(pUser != null && !"".equals(login)) pUser.setLogin(login);
                 String password = request.getParameter("password");
                 if(pUser != null && !"".equals(password)){
                     //здесь шифруем пароль и получаем соль
@@ -172,6 +172,7 @@ public class AdminServlet extends HttpServlet {
                 readerFacade.edit(pReader);
                 pUser.setReader(pReader);
                 userFacade.edit(pUser);
+                request.setAttribute("user", pUser);
                 request.setAttribute("info", "Данные пользователя изменены");
                 request.getRequestDispatcher("/editUser").forward(request, response);
                 break;

@@ -11,7 +11,7 @@
         <form action="setRole" method="POST">
             <p>
                 Список пользователей: 
-                <select name="userId">
+                <select name="userId" class="form-select">
                     <option value=""  <c:if test="${userId == null}">selected</c:if>>Выберите пользователя</option>
                     <c:forEach var="entry" items="${usersMap}">
                         <option value="${entry.key.id}" <c:if test="${userId == entry.key.id}">selected</c:if>>${entry.key.reader.firstname} ${entry.key.reader.lastname}, Логин: ${entry.key.login}, роль:  ${entry.value}</option>
@@ -20,14 +20,14 @@
             </p>
             <p>
                Список ролей: 
-               <select name="roleId">
+               <select name="roleId" class="form-select">
                  <option value=""  <c:if test="${roleId == null}">selected</c:if>>Выберите роль</option>
                    <c:forEach var="role" items="${listRoles}">
                      <option value="${role.id}" <c:if test="${roleId == role.id}">selected</c:if>>${role.roleName}</option>
                    </c:forEach>
                </select>
             </p>
-            <p><input type="submit" value="Назначить роль пользователю"></p>
+            <p><input class="btn btn-primary w-100" type="submit" value="Назначить роль пользователю"></p>
         </form>
 </div>
 

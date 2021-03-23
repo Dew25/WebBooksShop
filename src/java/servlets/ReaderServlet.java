@@ -136,6 +136,7 @@ public class ReaderServlet extends HttpServlet {
                 request.getRequestDispatcher(LoginServlet.pathToFile.getString("showBasket")).forward(request, response);
                 break;
             case "/buyBooks":
+                user = userFacade.find(user.getId());
                 //Получаем список книг в корзине из сессии
                 listBooksInBasket = (List<Book>) session.getAttribute("basketList");
                 //Получаем массив отмеченных для покупки книг в корзине или нажатия ссылки при прочтении отрывка
@@ -154,7 +155,7 @@ public class ReaderServlet extends HttpServlet {
                     totalPricePurchase += b.getPrice();
                     buyBooks.add(b);
                 }
-                if(totalPricePurchase > userMoney){
+                if(userMoney < totalPricePurchase){
                     request.setAttribute("info", "Недостаточно денег для покупки");
                     request.getRequestDispatcher("/listBooks").forward(request, response);
                     break;
@@ -171,7 +172,7 @@ public class ReaderServlet extends HttpServlet {
                 //Редактируем данные вошедшего читателя в сессии
                 User bUser = userFacade.find(user.getId());
                 session.setAttribute("user", bUser);
-                
+                userFacade.edit(bUser);
                 if(listBooksInBasket != null){
                     //есои запрос из корзины
                     request.setAttribute("listBooksInBasket", listBooksInBasket);
@@ -202,8 +203,8 @@ public class ReaderServlet extends HttpServlet {
                 if(pReader != null && !"".equals(phone)) pReader.setPhone(phone);
                 String money = request.getParameter("money");
                 if(pReader != null && !"".equals(money)) pReader.setMoney(money);
-                String login = request.getParameter("login");
-                if(pUser != null && !"".equals(login)) pUser.setLogin(login);
+//                String login = request.getParameter("login");
+//                if(pUser != null && !"".equals(login)) pUser.setLogin(login);
                 String password = request.getParameter("password");
                 if(pUser != null && !"".equals(password)){
                     //здесь шифруем пароль и получаем соль

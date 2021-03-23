@@ -26,7 +26,7 @@
         </div>
         <div class="col-md-6">
           <label for="login" class="form-label">Логин</label>
-          <input type="text" class="form-control" id="login" name="login"  value="${user.login}">
+          <input readonly type="text" class="form-control" id="login" name="login"  value="${user.login}">
         </div>
         <div class="col-md-6">
           <label for="password" class="form-label">Пароль</label>

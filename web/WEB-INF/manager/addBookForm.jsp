@@ -7,15 +7,19 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
     <h3 class="w-100 text-center my-5 ">Добавить новую книгу</h3>
-    <div class="row w-100"><a href="uploadCoverForm" class="col-4 mx-auto">Загрузить обложку для книги</a></p>
-    <div class="row w-100"><a href="uploadTextForm" class="col-4 mx-auto">Загрузить текст для книги</a></p>
+    <div class="row w-50 mx-auto">
+        <a href="uploadCoverForm" class="col-5 offset-4">Загрузить обложку для книги</a>
+    </div>
+    <div class="row w-50 mx-auto mb-3">
+        <a href="uploadTextForm" class="col-5 offset-4">Загрузить текст для книги</a>
+    </div>
     <form action="createBook" method="POST">
       <div class="row w-50 my-2 mx-auto">
         <div class="col-4 text-end">
             Название книги 
         </div>
         <div class="col-8 text-start ">
-          <input class="col-9" type="text" name="name">
+          <input class="w-100" type="text" name="name">
         </div>
       </div>
       <div class="row w-50 my-2 mx-auto">
@@ -23,7 +27,7 @@
           Автор книги 
         </div>
         <div class="col-8 text-start">  
-          <input class="col-7" type="text" name="author">
+          <input class="col-8" type="text" name="author">
         </div>
       </div>
       <div class="row w-50 my-2 mx-auto">
@@ -39,7 +43,7 @@
             ISBN: 
         </div>
         <div class="col-8 text-start">  
-          <input class="col-4" type="text" name="isbn">
+          <input class="col-8" type="text" name="isbn">
         </div>
       </div>
       <div class="row w-50 my-2 mx-auto">
@@ -76,10 +80,13 @@
           </select>
         </div>
       </div>
-     
-        <div class="col mt-3 text-center">    
-          <input class="col-2 bg-primary text-white" type="submit" name="submit" value="Добавить">
+      <div class="row w-50 my-2 mx-auto">
+        <div class="col-4 text-end">
+              
         </div>
-      
+        <div class="col-8 text-start mt-3">     
+          <input class="w-50 bg-primary text-white" type="submit" name="submit" value="Добавить">
+        </div>
+      </div>
     </form>
  

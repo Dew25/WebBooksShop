@@ -34,7 +34,6 @@ import session.UserRolesFacade;
  * @author jvm
  */
 @WebServlet(name = "LoginServlet", loadOnStartup = 1, urlPatterns = {
-    "/index.jsp",
     "/index",
     "/loginForm",
     "/login",
