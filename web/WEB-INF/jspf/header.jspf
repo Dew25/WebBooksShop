@@ -10,4 +10,4 @@
   <body>
     <div class="container">
         <c:import url="/WEB-INF/menu/menu.jsp" />
-        <p class="w-100 text-center text-danger">${info}</p>
+        <p id="info" class="w-100 text-center text-danger">${info}</p>
