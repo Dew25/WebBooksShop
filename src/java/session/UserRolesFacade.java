@@ -5,7 +5,6 @@
  */
 package session;
 
-import entity.Role;
 import entity.User;
 import entity.UserRoles;
 import java.util.List;
@@ -21,7 +20,7 @@ import javax.persistence.PersistenceContext;
 @Stateless
 public class UserRolesFacade extends AbstractFacade<UserRoles> {
     
-    @PersistenceContext(unitName = "JPTVR19WebLibraryPU")
+    @PersistenceContext(unitName = "WebBooksShoplPU")
     private EntityManager em;
     
     @EJB private RoleFacade roleFacade;
