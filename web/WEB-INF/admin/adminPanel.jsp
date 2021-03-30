@@ -14,7 +14,7 @@
                 <select name="userId" class="form-select">
                     <option value=""  <c:if test="${userId == null}">selected</c:if>>Выберите пользователя</option>
                     <c:forEach var="entry" items="${usersMap}">
-                        <option value="${entry.key.id}" <c:if test="${userId == entry.key.id}">selected</c:if>>${entry.key.reader.firstname} ${entry.key.reader.lastname}, Логин: ${entry.key.login}, роль:  ${entry.value}</option>
+                        <option value="${entry.key.id}" <c:if test="${userId == entry.key.id}">selected</c:if>>${entry.key.reader.firstname} ${entry.key.reader.lastname}, логин: ${entry.key.login}, роль:  ${entry.value}</option>
                     </c:forEach>
                 </select>
             </p>

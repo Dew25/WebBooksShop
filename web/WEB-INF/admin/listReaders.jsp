@@ -8,7 +8,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
         <h3 class="w-100 my-5 text-center">Список читателей</h3>
         <p class="">Всего пользователей: ${usersCount}<p>
-        <table class="table table-striped">
+        <table id="tableListReaders" class="table table-striped">
               <thead>
               <th>№</th>
               <th>Id</th>
