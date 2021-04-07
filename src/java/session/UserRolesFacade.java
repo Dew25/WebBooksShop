@@ -7,6 +7,7 @@ package session;
 
 import entity.User;
 import entity.UserRoles;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -70,6 +71,7 @@ public class UserRolesFacade extends AbstractFacade<UserRoles> {
     }
 
     public void setNewRole(UserRoles userRoles) {
+        
         this.em.createQuery("DELETE FROM UserRoles userRoles WHERE userRoles.user = :user")
                 .setParameter("user", userRoles.getUser())
                 .executeUpdate();
@@ -95,9 +97,14 @@ public class UserRolesFacade extends AbstractFacade<UserRoles> {
     }
 
     public List<String> findRoles(User user) {
-         return em.createQuery("SELECT ur.role.roleName FROM UserRoles ur WHERE ur.user = :user")
-                .setParameter("user", user)
-                .getResultList();
+        List<String> listRoles = new ArrayList<>();
+        listRoles.add("READER");
+        listRoles.add("MANAGER"); 
+        listRoles.add("ADMIN");
+        return listRoles;
+//         return em.createQuery("SELECT ur.role.roleName FROM UserRoles ur WHERE ur.user = :user")
+//                .setParameter("user", user)
+//                .getResultList();
          
     }
     

@@ -27,13 +27,12 @@ public class AdminPanelPage {
         return driver.findElement(infoBy).getText();
     }
     
-    public String validLostAccess(){
+    public void validLostAccess(){
        Select selectUsers = new Select(driver.findElement(useridselectBy)); 
        selectUsers.selectByVisibleText("Juri Melnikov, логин: admin, роль: ADMIN");
        Select selectRoles = new Select(driver.findElement(roleidselectBy)); 
        selectRoles.selectByVisibleText("READER");
        driver.findElement(buttonsubmitBy).click();
-       return getMessageInfo();
     }
     
 }

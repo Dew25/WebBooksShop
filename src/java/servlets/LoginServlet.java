@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -28,6 +29,7 @@ import session.ReaderFacade;
 import session.RoleFacade;
 import session.UserFacade;
 import session.UserRolesFacade;
+import tools.EncryptPassword;
 
 /**
  *
@@ -54,14 +56,19 @@ public class LoginServlet extends HttpServlet {
 @EJB private CoverFacade coverFacade;
 @EJB private HistoryFacade historyFacade;
 
+@Inject private EncryptPassword encryptPassword;
+    
+
 public static final ResourceBundle pathToFile = ResourceBundle.getBundle("property.pathToFile");
         
     @Override
     public void init() throws ServletException {
         if(userFacade.count() > 0) return;
+        String salt = encryptPassword.createSalt();
+        String password = encryptPassword.createHash("12345", salt);
         Reader reader = new Reader("Juri", "Melnikov", "56569987",1000);
         readerFacade.create(reader);
-        User user = new User("admin", "12345", reader);
+        User user = new User("admin", password, salt, reader);
         userFacade.create(user);
         Role role = new Role("ADMIN");
         roleFacade.create(role);
@@ -134,7 +141,9 @@ public static final ResourceBundle pathToFile = ResourceBundle.getBundle("proper
                     request.getRequestDispatcher("/loginForm").forward(request, response);
                     break;
                 }
-                if(!password.equals(user.getPassword())){
+                String salt = user.getSalt();
+                String encryptPwd = encryptPassword.createHash(password, salt);
+                if(!encryptPwd.equals(user.getPassword())){
                     request.setAttribute("info","Нет такого пользователя");
                     request.getRequestDispatcher("/loginForm").forward(request, response);
                     break;
@@ -179,7 +188,9 @@ public static final ResourceBundle pathToFile = ResourceBundle.getBundle("proper
                 
                 Reader reader = new Reader(firstname, lastname, phone, money);
                 readerFacade.create(reader);
-                user = new User(login, password, reader);
+                salt = encryptPassword.createSalt();
+                encryptPwd = encryptPassword.createHash(password, salt);
+                user = new User(login, encryptPwd, salt, reader);
                 userFacade.create(user);
                 //Здесь добавим роль пользователю.
                 Role roleReader = roleFacade.findByName("READER");
