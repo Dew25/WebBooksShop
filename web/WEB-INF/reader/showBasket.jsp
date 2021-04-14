@@ -30,10 +30,12 @@
                             <div class="card-title">${book.name}</div>
                             <div class="card-text">${book.author}</div>
                             <div class="card-text">${book.publishedYear}</div>
-                            <!--  <p class="d-flex justify-content-center">
-                              <a href="readBook?bookId=${book.id}" class="w-50 text-nowrap">Читать</a>
-                              <a href="addToBasket?bookId=${book.id}" class=" w-50 text-nowrap">В корзину</a>
-                            </p>-->
+                            <c:if test="${book.discount <= 0 || book.discountDate > today}">
+                                <div class="card-text">${book.price/100} EUR</div>
+                            </c:if>
+                            <c:if test="${book.discount > 0 && book.discountDate < today}">
+                                <div class="card-text text-danger"><span class="text-decoration-line-through text-black-50">${book.price/100}</span> ${(book.price - book.price*book.discount/100)/100} EUR</div>
+                            </c:if>
                           </div>
                         </div>
                     </td>

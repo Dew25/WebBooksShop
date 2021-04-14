@@ -17,6 +17,8 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.stream.Stream;
@@ -128,6 +130,7 @@ public class ReaderServlet extends HttpServlet {
                 break;
             case "/showBasket":
                 List<Book> listBooksInBasket = (List<Book>) session.getAttribute("basketList");
+                request.setAttribute("today", new Date());
                 request.setAttribute("listBooksInBasket", listBooksInBasket);
                 if(listBooksInBasket == null || listBooksInBasket.isEmpty()){
                     request.getRequestDispatcher("/listBooks").forward(request, response);
@@ -147,12 +150,19 @@ public class ReaderServlet extends HttpServlet {
                     break;
                 }
                 int userMoney = user.getReader().getMoney();
+                Calendar c = new GregorianCalendar();
                 List<Book> buyBooks = new ArrayList<>();
                 int totalPricePurchase = 0;
                 //Считаем стоимость покупаемых книг, которые отмечены в корзине
                 for(String selectedBookId : selectedBooks){
                     Book b = bookFacade.find(Long.parseLong(selectedBookId));
-                    totalPricePurchase += b.getPrice();
+                    long today = c.getTimeInMillis();
+                    long bookDiscountDate = b.getDiscountDate().getTime();
+                    if(b.getDiscountDate() != null && today > bookDiscountDate){
+                        totalPricePurchase += b.getPrice() - b.getPrice()*b.getDiscount()/100;
+                    }else{
+                        totalPricePurchase += b.getPrice();
+                    }
                     buyBooks.add(b);
                 }
                 if(userMoney < totalPricePurchase){

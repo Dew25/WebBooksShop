@@ -10,6 +10,8 @@ import entity.Cover;
 import entity.Text;
 import entity.User;
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
@@ -25,6 +27,7 @@ import session.ReaderFacade;
 import session.TextFacade;
 import session.UserFacade;
 import session.UserRolesFacade;
+import tools.SheduleDiscount;
 
 /**
  *
@@ -33,6 +36,8 @@ import session.UserRolesFacade;
 @WebServlet(name = "ManagerServlet", urlPatterns = {
      "/addBook",
     "/createBook",
+    "/discountForm",
+    "/setDiscount",
    
     
 
@@ -141,7 +146,49 @@ public class ManagerServlet extends HttpServlet {
                 request.getRequestDispatcher("/listBooks")
                         .forward(request, response);
                 break;
-            
+            case "/discountForm":
+                request.setAttribute("activeDiscountForm", "true");
+                List<Book> listBooks = bookFacade.findNotDiscountBook();
+                request.setAttribute("listBooks", listBooks);
+                request.getRequestDispatcher(LoginServlet
+                                .pathToFile
+                                .getString("discountForm")
+                        )
+                        .forward(request, response);
+                break;
+            case "/setDiscount":
+                String bookId = request.getParameter("bookId");
+                String discount = request.getParameter("discount");
+                String dateDiscount = request.getParameter("dateDiscount");//format yyyy-mm-dd
+                String duration = request.getParameter("duration");
+                String durationType = request.getParameter("durationType");
+                if(bookId==null || "".equals(bookId)  
+                       || discount==null || "".equals(discount) 
+                       || dateDiscount==null || "".equals(dateDiscount) 
+                       || duration==null || "".equals(duration) 
+                       || durationType == null || "".equals(durationType)
+                       ){
+                    request.setAttribute("info", "Заполние все поля");
+                    request.getRequestDispatcher("/discountForm")
+                            .forward(request, response);
+                }
+                book = bookFacade.find(Long.parseLong(bookId));
+                String year = dateDiscount.substring(0,4);
+                String month = dateDiscount.substring(5,5+2);
+                String day = dateDiscount.substring(8,8+2);
+                Calendar cDateDiscount = new GregorianCalendar(Integer.parseInt(year), Integer.parseInt(month)-1, Integer.parseInt(day));
+                SheduleDiscount sheduleDiscount = new SheduleDiscount();
+                Book discountBook = sheduleDiscount.setDiscount(
+                        book, 
+                        Integer.parseInt(discount),
+                        cDateDiscount.getTime(), 
+                        Integer.parseInt(duration),
+                        durationType
+                );
+                bookFacade.edit(discountBook);
+                request.getRequestDispatcher("/listBooks")
+                        .forward(request, response);
+                break;
             
             
         }

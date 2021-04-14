@@ -12,6 +12,7 @@ import entity.User;
 import entity.UserRoles;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.ejb.EJB;
@@ -203,7 +204,7 @@ public static final ResourceBundle pathToFile = ResourceBundle.getBundle("proper
                 break; 
             case "/listBooks":
                 request.setAttribute("activeListBook", "true");
-                
+                request.setAttribute("today", new Date());
                 listBooks = null;
                 try {
                     listBooks = bookFacade.findAll();

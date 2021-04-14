@@ -19,12 +19,14 @@
                 <a class="nav-link <c:if test="${activeAddBook}">active</c:if>" aria-current="page" href="addBook">Добавить книгу</a>
                 <a class="nav-link <c:if test="${activeListBooks}">active</c:if>" href="listBooks">Список книг</a>
                 <a class="nav-link <c:if test="${activePurchasedBooks}">active</c:if>" href="purchasedBooks">Купленные книги</a>
+                <a class="nav-link <c:if test="${activeDiscountForms}">active</c:if>" href="discountForm">Скидка</a>
                 <a class="nav-link <c:if test="${activeListReaders}">active</c:if>" id="listReaders" href="listReaders">Список читателей</a>
                 <a class="nav-link <c:if test="${activeAdminPanel}">active</c:if>" id="adminForm" href="adminForm">Панель администратора</a>
                 <a class="nav-link <c:if test="${activeOut}">active</c:if>" id="logout" href="logout">Выйти</a>
             </c:when>
             <c:when test="${role eq 'MANAGER'}">
                 <a class="nav-link <c:if test="${activeListBooks}">active</c:if>" href="listBooks">Список книг</a>
+                <a class="nav-link <c:if test="${activeDiscountForms}">active</c:if>" href="discountForm">Скидка</a>
                 <a class="nav-link <c:if test="${activePurchasedBooks}">active</c:if>" href="purchasedBooks">Купленные книги</a>
                 <a class="nav-link <c:if test="${activeAddBook}">active</c:if>" aria-current="page" href="addBook">Добавить книгу</a>
                 <a class="nav-link <c:if test="${activeEditProfile}">active</c:if>" href="editProfile">Профиль</a>
