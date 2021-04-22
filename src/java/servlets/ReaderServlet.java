@@ -9,9 +9,7 @@ import entity.Book;
 import entity.History;
 import entity.Reader;
 import entity.User;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -240,8 +238,8 @@ public class ReaderServlet extends HttpServlet {
                 List<Book> buyBooksList = historyFacade.findPurchasedBook(user.getReader());
                 try {
                     File file = new File(book.getText().getPath());
-                    FileReader fileReader = new FileReader(file);
-                    BufferedReader reader = new BufferedReader(fileReader);
+//                    FileReader fileReader = new FileReader(file);
+//                    BufferedReader reader = new BufferedReader(fileReader);
                     try (PrintWriter out = response.getWriter()) {
                         out.println("<!DOCTYPE html>");
                         out.println("<html>");
@@ -252,7 +250,7 @@ public class ReaderServlet extends HttpServlet {
                         out.println("</head>");
                         out.println("<body>");
                         out.println("<div class=\"container\">");
-                        out.println("</p>");
+                        out.println("<p>");
                         if(buyBooksList.contains(book)){//если список купленных пользователем книг СОДЕРЖИТ книгу
                             try(Stream<String> stream = Files.lines(file.toPath(), StandardCharsets.UTF_8)){
                                 stream.forEachOrdered(line -> out.print(line));

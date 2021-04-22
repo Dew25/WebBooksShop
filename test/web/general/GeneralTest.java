@@ -90,7 +90,7 @@ public class GeneralTest {
     public void logoutTest(){
         System.out.println("logoutTest: ");
         menuPage.logout();
-        String result = menuPage.getMessageInfo();
+        String result = menuPage.getMessageInfo().trim();
         String expected = "Вы вышли";
         System.out.println("    Expected: "+ expected);
         System.out.println("    Result: " + result);
@@ -100,7 +100,7 @@ public class GeneralTest {
     public void changeUserProfile(String login, boolean allowed){
         System.out.println("changeUserProfile("+login+","+allowed+"): ");
         menuPage.getListReadersPage().getEditUserPage(login).changeUserProfile();
-        String result = menuPage.getMessageInfo();
+        String result = menuPage.getMessageInfo().trim();
         String expected = "Данные пользователя изменены";
         System.out.println("    Expected: "+ expected);
         System.out.println("    Result: " + result);

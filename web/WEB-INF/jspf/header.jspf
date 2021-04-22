@@ -8,6 +8,6 @@
     <title>Наша библиотека</title>
   </head>
   <body>
-      <div class="container">
+      <div class="container" style="height: 100vh;">
         <c:import url="/WEB-INF/menu/menu.jsp" />
         <p id="info" class="w-100 text-center text-danger">${info}&nbsp;</p>
