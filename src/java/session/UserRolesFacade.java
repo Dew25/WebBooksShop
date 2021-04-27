@@ -5,6 +5,7 @@
  */
 package session;
 
+import entity.Role;
 import entity.User;
 import entity.UserRoles;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class UserRolesFacade extends AbstractFacade<UserRoles> {
     private EntityManager em;
     
     @EJB private RoleFacade roleFacade;
+    @EJB private UserRolesFacade userRolesFacade;
    
     @Override
     protected EntityManager getEntityManager() {
@@ -101,11 +103,13 @@ public class UserRolesFacade extends AbstractFacade<UserRoles> {
         listRoles.add("READER");
         listRoles.add("MANAGER"); 
         listRoles.add("ADMIN");
-        return listRoles;
-//         return em.createQuery("SELECT ur.role.roleName FROM UserRoles ur WHERE ur.user = :user")
-//                .setParameter("user", user)
-//                .getResultList();
-         
+        return listRoles;   
+    }
+
+    public void setRole(String roleName, User user) {
+        Role role = roleFacade.findByName(roleName);
+        UserRoles ur = new UserRoles(user, role);
+        userRolesFacade.create(ur);
     }
     
 }

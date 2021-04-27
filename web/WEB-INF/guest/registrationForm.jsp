@@ -5,7 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-   <h3 class="w-100 my-5 text-center">Редактировать профайл пльзователя</h3>
+   <h3 class="w-100 my-5 text-center">Регистрация пльзователя</h3>
    <div class="w-100 d-flex justify-content-center m-2">
     <form action="createUser" method="POST">
       Имя читателя <input type="text" name="firstname" value="${user.reader.firstname}"><br>
