@@ -20,6 +20,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import session.ReaderFacade;
 import session.UserFacade;
 import session.UserRolesFacade;
@@ -29,10 +30,13 @@ import tools.EncryptPassword;
  *
  * @author jvm
  */
-@WebServlet(name = "UserServletJson", urlPatterns = {
-    "/createUserJson"
+@WebServlet(name = "LoginServletJson", urlPatterns = {
+    "/createUserJson",
+    "/loginJson",
+    "/logoutJson",
+    
 })
-public class UserServletJson extends HttpServlet {
+public class LoginServletJson extends HttpServlet {
     @EJB UserFacade userFacade;
     @EJB ReaderFacade readerFacade;
     @EJB UserRolesFacade userRolesFacade;
@@ -51,11 +55,12 @@ public class UserServletJson extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
-        String json = "";
+        String json = null;
+        JsonReader jsonReader = Json.createReader(request.getReader());
+        JsonObjectBuilder job = Json.createObjectBuilder();
         String path = request.getServletPath();
         switch (path) {
             case "/createUserJson":
-                JsonReader jsonReader = Json.createReader(request.getReader());
                 JsonObject jsonObject = jsonReader.readObject();
                 String firstname = jsonObject.getString("firstname","");
                 String lastname = jsonObject.getString("lastname","");
@@ -68,7 +73,6 @@ public class UserServletJson extends HttpServlet {
                 String salt = encryptPassword.createSalt();
                 password = encryptPassword.createHash(password, salt);
                 User user = new User(login, password, salt, reader);
-                JsonObjectBuilder job = Json.createObjectBuilder();
                 try {
                     userFacade.create(user);
                 } catch (Exception e) {
@@ -85,13 +89,65 @@ public class UserServletJson extends HttpServlet {
                         .build()
                         .toString();
                 break;
-            
+            case "/loginJson":
+                jsonObject = jsonReader.readObject();
+                login = jsonObject.getString("login","");
+                password = jsonObject.getString("password","");
+                if(login == null || "".equals(login)
+                        || password == null || "".equals(password)){
+                    json=job.add("requestStatus", "false")
+                        .add("info", "Нет такого пользователя")
+                        .build()
+                        .toString();
+                    break;
+                }
+                User regUser = userFacade.findByLogin(login);
+                if(regUser == null){
+                   json=job.add("requestStatus", "false")
+                        .add("info", "Нет такого пользователя")
+                        .build()
+                        .toString();
+                    break;
+                }
+                password = encryptPassword.createHash(password, regUser.getSalt());
+                if(!password.equals(regUser.getPassword())){
+                    json=job.add("requestStatus", "false")
+                        .add("info", "Нет такого пользователя")
+                        .build()
+                        .toString();
+                    break;
+                }
+                HttpSession session = request.getSession(true);
+                session.setAttribute("user", regUser);
+                json=job.add("requestStatus", "true")
+                        .add("info", "Вы вошли как "+regUser.getLogin())
+                        .add("token", session.getId())
+                        .add("role", userRolesFacade.getTopRoleForUser(regUser))
+                        .build()
+                        .toString();
+                
+                break;
+            case "/logoutJson":
+                session = request.getSession(false);
+                if(session != null){
+                    session.invalidate();
+                    json=job.add("requestStatus", "true")
+                        .add("info", "Вы вышли")
+                        .build()
+                        .toString();
+                }
+                break;
         }
-        if(json != null && !"".equals(json)){
-            try (PrintWriter out = response.getWriter()) {
-                out.println(json);
-            }
+        if(json == null && "".equals(json)){
+            json=job.add("requestStatus", "false")
+                        .add("info", "Ошибка обработки запроса")
+                        .build()
+                        .toString();
         }
+        try (PrintWriter out = response.getWriter()) {
+            out.println(json);
+        }
+        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

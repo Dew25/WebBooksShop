@@ -24,7 +24,10 @@ document.getElementById("loginForm").onclick = function (){
 };
 document.getElementById("logout").onclick = function (){
     toogleMenuActive("logout");
+    authModule.logout();
 };
+
+authModule.toogleMenu();
 
 function toogleMenuActive(elementId){
    const activeElement = document.getElementById(elementId);

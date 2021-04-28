@@ -27,9 +27,104 @@ class AuthModule{
         document.getElementById('registration-link').addEventListener('click',userModule.registration); 
         
     }
-    auth(){
+    async auth(){
+       const login = document.getElementById('login').value;
+       const password = document.getElementById('password').value;
+       const credential= {
+         "login": login,
+         "password": password
+       };
+       const response = await fetch('loginJson', {
+         method: 'POST',
+         headers: {
+          'Content-Type': 'application/json;charset:utf8'
+         },
+         body: JSON.stringify(credential)
+       });
+       if(response.ok){
+        const result = await response.json();
+        document.getElementById('info').innerHTML=result.info;
+        console.log("Request status: "+result.requestStatus);
         document.getElementById('context').innerHTML='';
-        document.getElementById('info').innerHTML='отработал метод authModule.auth()';
+        if(result.requestStatus){
+          sessionStorage.setItem('token',JSON.stringify(result.token));
+          sessionStorage.setItem('role',JSON.stringify(result.role));
+        }else{
+          if(sessionStorage.getItem(token) !== null){
+            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('role');
+          }
+        }
+      }else{
+        console.log("Ошибка получения данных");
+      }
+      authModule.toogleMenu();
+      // console.log('Auth: token'+sessionStorage.getItem('token'));
+      // console.log('Auth: role'+sessionStorage.getItem('role'));
+    }
+    async logout(){
+      const response = await fetch('logoutJson',{
+        method: 'GET',
+        headers:{
+          'Content-Type': 'application/json;charset:utf8'
+        }
+      });
+      if(response.ok){
+        const result = await response.json();
+        if(result.requestStatus){
+          sessionStorage.removeItem('token');
+          sessionStorage.removeItem('role');
+        }
+      }
+      authModule.toogleMenu();
+
+    }
+    toogleMenu(){
+      let role = null;
+      if(sessionStorage.getItem('role') !== null){
+        role = JSON.parse(sessionStorage.getItem('role'));
+      }
+      console.log('Auth: token - '+sessionStorage.getItem('token'));
+      console.log('Auth: role - '+sessionStorage.getItem('role'));
+      
+      if(role===null){
+        document.getElementById("listBooks").style.display = 'block';
+        document.getElementById("loginForm").style.display = 'block';
+        document.getElementById("logout").style.display = 'none';
+        document.getElementById("addBook").style.display = 'none';
+        document.getElementById("purchasedBooks").style.display = 'none';
+        document.getElementById("discountForm").style.display = 'none';
+        document.getElementById("listReaders").style.display = 'none';
+        document.getElementById("adminForm").style.display = 'none';
+      }else if(role==="READER"){
+        document.getElementById("listBooks").style.display = 'block';
+        document.getElementById("loginForm").style.display = 'none';
+        document.getElementById("logout").style.display = 'block';
+        document.getElementById("addBook").style.display = 'none';
+        document.getElementById("purchasedBooks").style.display = 'block';
+        document.getElementById("discountForm").style.display = 'none';
+        document.getElementById("listReaders").style.display = 'none';
+        document.getElementById("adminForm").style.display = 'none';
+      }else if(role==="MANAGER"){
+        document.getElementById("listBooks").style.display = 'block';
+        document.getElementById("loginForm").style.display = 'none';
+        document.getElementById("logout").style.display = 'block';
+        document.getElementById("addBook").style.display = 'none';
+        document.getElementById("purchasedBooks").style.display = 'block';
+        document.getElementById("discountForm").style.display = 'block';
+        document.getElementById("listReaders").style.display = 'none';
+        document.getElementById("adminForm").style.display = 'none';
+      }else if(role==="ADMIN"){
+        document.getElementById("listBooks").style.display = 'block';
+        document.getElementById("loginForm").style.display = 'none';
+        document.getElementById("logout").style.display = 'block';
+        document.getElementById("addBook").style.display = 'none';
+        document.getElementById("purchasedBooks").style.display = 'block';
+        document.getElementById("discountForm").style.display = 'block';
+        document.getElementById("listReaders").style.display = 'block';
+        document.getElementById("adminForm").style.display = 'block';
+      }
+    
     }
    
 }
