@@ -1,7 +1,9 @@
 import {authModule} from './AuthModule.js';
+import {bookModule} from './BookModule.js';
 
 document.getElementById("addBook").onclick = function (){
     toogleMenuActive("addBook");
+    bookModule.printAddBookForm();
 };
 document.getElementById("listBooks").onclick = function (){
     toogleMenuActive("listBooks");

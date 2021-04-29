@@ -109,7 +109,7 @@ class AuthModule{
         document.getElementById("listBooks").style.display = 'block';
         document.getElementById("loginForm").style.display = 'none';
         document.getElementById("logout").style.display = 'block';
-        document.getElementById("addBook").style.display = 'none';
+        document.getElementById("addBook").style.display = 'block';
         document.getElementById("purchasedBooks").style.display = 'block';
         document.getElementById("discountForm").style.display = 'block';
         document.getElementById("listReaders").style.display = 'none';
@@ -118,7 +118,7 @@ class AuthModule{
         document.getElementById("listBooks").style.display = 'block';
         document.getElementById("loginForm").style.display = 'none';
         document.getElementById("logout").style.display = 'block';
-        document.getElementById("addBook").style.display = 'none';
+        document.getElementById("addBook").style.display = 'block';
         document.getElementById("purchasedBooks").style.display = 'block';
         document.getElementById("discountForm").style.display = 'block';
         document.getElementById("listReaders").style.display = 'block';
