@@ -45,10 +45,10 @@ class BookModule{
       </div>
       <div class="row w-50 my-2 mx-auto">
         <div class="col-4 text-end">
-            Загрузите файлы для книги 
+            Загрузите обложку 
         </div>
         <div class="col-8 text-start">     
-            <input class="form-control col" type="file" name="file" id="file-cover" multiple>
+            <input class="form-control col" type="file" name="file" id="file-cover">
         </div>
       </div>
       <div class="row w-50 my-2 mx-auto">
@@ -56,7 +56,7 @@ class BookModule{
             Текст книги 
         </div>
         <div class="col-8 text-start">     
-          <input class="form-control" type="file" name="file" id="file-text" multiple>
+          <input class="form-control" type="file" name="file" id="file-text">
         </div>
       </div>
       <div class="row w-50 my-2 mx-auto">
@@ -73,12 +73,13 @@ class BookModule{
     }
   }
   async createBook(){
+    document.getElementById('info').innerHTML="Загрузка книги";
       const response = await fetch('createBookJson', {
         method: 'POST',
         body: new FormData(document.getElementById('book'))
       });
-      const result = await response.json()
       if(response.ok){
+        const result = await response.json()
         document.getElementById('info').innerHTML=result.info;
         const books = JSON.parse(sessionStorage.getItem('books'));
         if(books === null){

@@ -40,24 +40,16 @@ import session.TextFacade;
  *
  * @author jvm
  */
+@MultipartConfig()
 @WebServlet(name = "ManagerServletJson", urlPatterns = {
   "/createBookJson",
 
 })
-@MultipartConfig
 public class ManagerServletJson extends HttpServlet {
     @EJB private CoverFacade coverFacade;
     @EJB private TextFacade textFacade;
     @EJB private BookFacade bookFacade;
-  /**
-   * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-   * methods.
-   *
-   * @param request servlet request
-   * @param response servlet response
-   * @throws ServletException if a servlet-specific error occurs
-   * @throws IOException if an I/O error occurs
-   */
+
   protected void processRequest(HttpServletRequest request, HttpServletResponse response)
           throws ServletException, IOException {
     response.setContentType("text/html;charset=UTF-8");
@@ -71,55 +63,56 @@ public class ManagerServletJson extends HttpServlet {
     String path = request.getServletPath();
     switch (path) {
         case "/createBookJson":
-          List<Part> fileParts = request
+            List<Part> fileParts = request
                         .getParts()
                         .stream()
                         .filter(part -> "file".equals(part.getName()))
-                        .collect(Collectors.toList());
-                StringBuilder sbFullPathToFile = new StringBuilder();
-                Set<String> imagesExtension = new HashSet<>();
-                imagesExtension.add("jpg");
-                imagesExtension.add("png");
-                imagesExtension.add("gif");
-                String fileFolder = "";
-                Book book = null;
-                Cover cover = null;
-                Text text = null;
-                for(Part filePart : fileParts){
-                    String fileName = getFileName(filePart);
-                    String fileExtension = fileName.substring(fileName.length()-3, fileName.length());
-                    if(imagesExtension.contains(fileExtension)){
-                        fileFolder = "images";
-                    }else{
-                        fileFolder = "texts";
-                    }
-                    sbFullPathToFile.append(uploadFolder)//указана в файле свойств
-                      .append(File.separator)
-                      .append(fileFolder)//директория с файлом
-                      .append(File.separator)
-                      .append(fileName);// имя загружаемого файла
-                    File file = new File(sbFullPathToFile.toString());
-                    file.mkdirs();
-                    try(InputStream fileContent = filePart.getInputStream()){
-                       Files.copy(fileContent, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                    }
-                    if("images".equals(fileFolder)){
-                        cover = new Cover(getFileName(filePart), sbFullPathToFile.toString());
-                        coverFacade.create(cover);
-                    }else{
-                        text = new Text(getFileName(filePart), sbFullPathToFile.toString());
-                        textFacade.create(text);
-                    }
-                    
-                    if(cover == null || text == null){
-                        json=job.add("requestStatus", "false")
-                            .add("info", "Выберите файл обложки и текст книги")
-                            .build()
-                            .toString();
-                        break;   
-                    }
-                    
+                        .collect(Collectors.toList()
+            );
+            Set<String> imagesExtension = new HashSet<>();
+            imagesExtension.add("jpg");
+            imagesExtension.add("png");
+            imagesExtension.add("gif");
+            String fileFolder = "";
+            Book book = null;
+            Cover cover = null;
+            Text text = null;
+            for(Part filePart : fileParts){
+                String fileName = getFileName(filePart);
+                String fileExtension = fileName.substring(fileName.length()-3, fileName.length());
+                if(imagesExtension.contains(fileExtension)){
+                    fileFolder = "images";
+                }else{
+                    fileFolder = "texts";
                 }
+                StringBuilder sbFullPathToFile = new StringBuilder();
+                sbFullPathToFile.append(uploadFolder)//указана в файле свойств
+                  .append(File.separator)
+                  .append(fileFolder)//директория с файлом
+                  .append(File.separator)
+                  .append(fileName);// имя загружаемого файла
+                File file = new File(sbFullPathToFile.toString());
+                file.mkdirs();
+                try(InputStream fileContent = filePart.getInputStream()){
+                   Files.copy(fileContent, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                }
+                if("images".equals(fileFolder)){
+                    cover = new Cover(fileName, sbFullPathToFile.toString());
+                    coverFacade.create(cover);
+                }else{
+                    text = new Text(fileName, sbFullPathToFile.toString());
+                    textFacade.create(text);
+                }
+
+
+            }
+            if(cover == null || text == null){
+                json=job.add("requestStatus", "false")
+                    .add("info", "Выберите файл обложки и текст книги")
+                    .build()
+                    .toString();
+                break;   
+            }
             String name = request.getParameter("name");
             String author = request.getParameter("author");
             String publishedYear = request.getParameter("publishedYear");
@@ -131,20 +124,23 @@ public class ManagerServletJson extends HttpServlet {
                   || isbn == null || "".equals(isbn)
                   || price == null || "".equals(price)
                   ){
-            json=job.add("requestStatus", "false")
-                    .add("info", "Заполните все поля")
+                json=job.add("requestStatus", "false")
+                        .add("info", "Заполните все поля")
+                        .build()
+                       .toString();
+                break;   
+            }
+        book = new Book(name, author, Integer.parseInt(publishedYear), isbn, price, cover, text);
+        bookFacade.create(book);
+        JsonBookBuilder jbb = new JsonBookBuilder();
+        JsonObject jsonBook = jbb.createJsonBook(book);
+        json=job.add("requestStatus", "true")
+                    .add("info", "Добавлена книга \""+book.getName()+"\".")
+                    .add("book", jsonBook.toString())
                     .build()
-                   .toString();
-              break;   
-          }
-                book = new Book(name, author, Integer.parseInt(publishedYear), isbn, price, cover, text);
-                bookFacade.create(book);
-                json=job.add("requestStatus", "true")
-                            .add("info", "Добавлена книга \""+book.getName()+"\".")
-                            .add("book",  new JsonBookBuilder().createJsonBook(book))
-                            .build()
-                            .toString();
-          break;  
+                    .toString();
+        response.setContentType("application/json"); 
+        break;  
     }
     if(json == null && "".equals(json)){
         json=job.add("requestStatus", "false")

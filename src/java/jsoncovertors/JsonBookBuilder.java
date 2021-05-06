@@ -16,17 +16,16 @@ import javax.json.JsonObjectBuilder;
  */
 public class JsonBookBuilder {
     public JsonObject createJsonBook(Book book){
-        JsonObject jsonBook = null;
         JsonObjectBuilder job = Json.createObjectBuilder();
-        jsonBook = job.add("id", book.getId())
+        job.add("id", book.getId())
                 .add("name", book.getName())
                 .add("author", book.getAuthor())
                 .add("publishedYear", book.getPublishedYear())
                 .add("price", book.getPrice())
                 .add("cover", book.getCover().getPath())
                 .add("text", book.getText().getPath())
-                .add("discount", book.getDiscount())
-                .build();
-        return jsonBook;
+                .add("discount", book.getDiscount());
+                
+        return job.build();
     }
 }
