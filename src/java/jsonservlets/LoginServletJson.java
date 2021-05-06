@@ -68,6 +68,19 @@ public class LoginServletJson extends HttpServlet {
                 String money = jsonObject.getString("money","");
                 String login = jsonObject.getString("login","");
                 String password = jsonObject.getString("password","");
+                if(firstname == null || "".equals(firstname)
+                      || lastname == null || "".equals(lastname) 
+                      || phone == null || "".equals(phone) 
+                      || money == null || "".equals(money) 
+                      || login == null || "".equals(login) 
+                      || password == null || "".equals(password) 
+                        ){
+                    json=job.add("requestStatus", "false")
+                        .add("info", "Заполните все поля формы")
+                        .build()
+                        .toString();
+                    break;
+                }
                 Reader reader = new Reader(firstname, lastname, phone, money);
                 readerFacade.create(reader);
                 String salt = encryptPassword.createSalt();
@@ -89,7 +102,7 @@ public class LoginServletJson extends HttpServlet {
                         .build()
                         .toString();
                 break;
-            case "/loginJson":
+            case "/loginJson": 
                 jsonObject = jsonReader.readObject();
                 login = jsonObject.getString("login","");
                 password = jsonObject.getString("password","");

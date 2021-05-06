@@ -51,7 +51,7 @@ and open the template in the editor.
               <div class="row w-50 mx-auto mb-3">
                   <a href="uploadTextForm" class="col-5 offset-4">Загрузить текст для книги</a>
               </div>
-              <form action="createBook" method="POST">
+              
                 <div class="row w-50 my-2 mx-auto">
                   <div class="col-4 text-end">
                       Название книги 
@@ -97,12 +97,9 @@ and open the template in the editor.
                       Обложка 
                   </div>
                   <div class="col-8 text-start">     
-                    <select class="form-select" name="coverId" aria-label="Выбрать обложку">
-                      <option selected>Open this select menu</option>
-                      <c:forEach var="cover" items="${listCovers}">
-                            <option value="${cover.id}">${cover.description}</option>
-                      </c:forEach>
-                    </select>
+                   
+                      <input class="form-control col" type="file" name="fileCover" id="file-cover">
+                    
                   </div>
                 </div>
                 <div class="row w-50 my-2 mx-auto">
@@ -110,12 +107,7 @@ and open the template in the editor.
                       Текст книги 
                   </div>
                   <div class="col-8 text-start">     
-                    <select class="form-select" name="textId" aria-label="Выбрать файл с текстом">
-                      <option selected>Open this select menu</option>
-                      <c:forEach var="text" items="${listTexts}">
-                            <option value="${text.id}">${text.description}</option>
-                      </c:forEach>
-                    </select>
+                    <input class="form-control" type="file" name="fileText" id="file-text">
                   </div>
                 </div>
                 <div class="row w-50 my-2 mx-auto">
@@ -126,7 +118,7 @@ and open the template in the editor.
                     <input class="w-50 bg-primary text-white" type="submit" name="submit" value="Добавить">
                   </div>
                 </div>
-              </form>
+             
   
 
             </div>
