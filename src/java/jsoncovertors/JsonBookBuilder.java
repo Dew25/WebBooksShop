@@ -22,9 +22,15 @@ public class JsonBookBuilder {
                 .add("author", book.getAuthor())
                 .add("publishedYear", book.getPublishedYear())
                 .add("price", book.getPrice())
-                .add("cover", book.getCover().getPath())
-                .add("text", book.getText().getPath())
-                .add("discount", book.getDiscount());
+                .add("cover", new JsonCoverBuilder().createJsonCover(book.getCover()))
+                .add("text", new JsonTextBuilder().createJsonText(book.getText()))
+                .add("discount", book.getDiscount())
+                .add("discountDuration", book.getDiscountDuration());
+        if(book.getDiscountDate() == null){
+            job.add("discountDate", "null");
+        }else{
+            job.add("discountDate", book.getDiscountDate().getTime());
+        }
                 
         return job.build();
     }

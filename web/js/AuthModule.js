@@ -1,3 +1,4 @@
+import { bookModule } from './BookModule.js';
 import {userModule} from './UserModule.js';
 class AuthModule{
     printLoginForm(){
@@ -46,6 +47,7 @@ class AuthModule{
         document.getElementById('info').innerHTML=result.info;
         console.log("Request status: "+result.requestStatus);
         document.getElementById('context').innerHTML='';
+        bookModule.printListBooks();
         if(result.requestStatus){
           sessionStorage.setItem('token',JSON.stringify(result.token));
           sessionStorage.setItem('role',JSON.stringify(result.role));
@@ -74,6 +76,7 @@ class AuthModule{
         if(result.requestStatus){
           sessionStorage.removeItem('token');
           sessionStorage.removeItem('role');
+          document.getElementById('info').innerHTML=result.info;
         }
       }
       authModule.toogleMenu();

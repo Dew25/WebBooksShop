@@ -5,13 +5,16 @@
  */
 package jsonservlets;
 
+import entity.Book;
 import entity.Reader;
 import entity.User;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.json.Json;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
@@ -21,6 +24,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import jsoncovertors.JsonBookBuilder;
+import session.BookFacade;
 import session.ReaderFacade;
 import session.UserFacade;
 import session.UserRolesFacade;
@@ -34,10 +39,12 @@ import tools.EncryptPassword;
     "/createUserJson",
     "/loginJson",
     "/logoutJson",
+    "/listBooksJson",
     
 })
 public class LoginServletJson extends HttpServlet {
     @EJB UserFacade userFacade;
+    @EJB BookFacade bookFacade;
     @EJB ReaderFacade readerFacade;
     @EJB UserRolesFacade userRolesFacade;
     
@@ -149,6 +156,14 @@ public class LoginServletJson extends HttpServlet {
                         .build()
                         .toString();
                 }
+                break;
+            case "/listBooksJson":
+                List<Book> listBooks = bookFacade.findAll();
+                JsonArrayBuilder jab = Json.createArrayBuilder();
+                listBooks.forEach((book) -> {
+                    jab.add(new JsonBookBuilder().createJsonBook(book));
+                });
+                json = jab.build().toString();
                 break;
         }
         if(json == null && "".equals(json)){

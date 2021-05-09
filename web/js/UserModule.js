@@ -76,6 +76,75 @@ class UserModule{
         }
         
     }
+    async printListUsers(){
+      let users = await userModule.loadListUsers();
+      const count = users.listUsers.length;
+      let context = document.getElementById('context');
+      context.innerHTML='';
+      await context.insertAdjacentHTML('afterBegin', 
+      `<h3 class="w-100 my-5 text-center">Список читателей</h3>
+        <p class="">Всего пользователей: ${count}<p>
+        <table id="tableListReaders" class="table table-striped">
+            <thead>
+            <th>№</th>
+            <th>Id</th>
+            <th>Имя</th>
+            <th>Фамилия</th>
+            <th>Деньги</th>
+            <th>Логин</th>
+            <th>Роль</th>
+            <th>Активность</th>
+            <th></th>
+            </thead>
+            <tbody>
+            <tr>
+            <td>${1}</td>
+            <td>${users.listUsers[i].user.id}</td>
+            <td>${users.listUsers[i].user.reader.firstname}</td>
+            <td>${users.listUsers[i].user.reader.lastname}</td>
+            <td>${users.listUsers[i].user.reader.money/100}</td>
+            <td>${users.listUsers[i].user.login}</td>
+            <td>${users.listUsers[i].role}</td>
+            <td>Yes</td>
+            <td><a class="btn bg-primary text-white"  onclick="function(){userModule.changeUser("${users.listUsers[i].id}")}"  href="#">Изменить</a></td>
+            </tr>
+            </tbody>
+        </table>`);
+      // let tbody = document.createElement('tbody');
+      // for(let i=0; i<users.listUsers.length; i++){
+      //   tbody.insertAdjacentHTML('beforeEnd', "<tr>");
+      //   tbody.insertAdjacentHTML('beforeEnd', `<td>${i+1}</td>`);
+      //   tbody.insertAdjacentHTML('beforeEnd', `<td>${users.listUsers[i].user.id}</td>`);
+      //   tbody.insertAdjacentHTML('beforeEnd', `<td>${users.listUsers[i].user.reader.firstname}</td>`);
+      //   tbody.insertAdjacentHTML('beforeEnd', `<td>${users.listUsers[i].user.reader.lastname}</td>`);
+      //   tbody.insertAdjacentHTML('beforeEnd', `<td>${users.listUsers[i].user.reader.money/100}</td>`);
+      //   tbody.insertAdjacentHTML('beforeEnd', `<td>${users.listUsers[i].user.login}</td>`);
+      //   tbody.insertAdjacentHTML('beforeEnd', `<td>${users.listUsers[i].role}</td>`);
+      //   tbody.insertAdjacentHTML('beforeEnd', `<td>Yes</td>`);
+      //   tbody.insertAdjacentHTML('beforeEnd', `<td><a class="btn bg-primary text-white"  onclick="function(){userModule.changeUser("${users.listUsers[i].id}")}"  href="#">Изменить</a></td>`);
+      //   tbody.insertAdjacentHTML('beforeEnd', '</tr>');
+      // }
+    }
+
+    async loadListUsers(){
+      let response = await fetch('listUsersJson',{
+        method: 'GET',
+        headers:{
+          'Content-Type': 'aplication/json;charser=utf-8'
+        }
+      })
+      if(response.ok){
+        let result = await response.json();
+        console.log('listUsers: '+result.listUsers.length);
+        return result;
+      }else{
+        document.getElementById('info').innerHTML="Ошибка сервера";
+        return null;
+      }
+    }
+    changeUser(userId){
+      concole.log('userId='+userId);
+    }
 }
 const userModule = new UserModule();
 export {userModule};
