@@ -45,12 +45,6 @@ and open the template in the editor.
             <div class="w-100 text-center" id="info"> </div>
             <div id="context">
               <h3 class="w-100 text-center my-5 ">Добавить новую книгу</h3>
-              <div class="row w-50 mx-auto">
-                  <a href="uploadCoverForm" class="col-5 offset-4">Загрузить обложку для книги</a>
-              </div>
-              <div class="row w-50 mx-auto mb-3">
-                  <a href="uploadTextForm" class="col-5 offset-4">Загрузить текст для книги</a>
-              </div>
               <form action="createBook" method="POST">
                 <div class="row w-50 my-2 mx-auto">
                   <div class="col-4 text-end">
@@ -94,15 +88,10 @@ and open the template in the editor.
                 </div>
                 <div class="row w-50 my-2 mx-auto">
                   <div class="col-4 text-end">
-                      Обложка 
+                      Загрузите обложку 
                   </div>
                   <div class="col-8 text-start">     
-                    <select class="form-select" name="coverId" aria-label="Выбрать обложку">
-                      <option selected>Open this select menu</option>
-                      <c:forEach var="cover" items="${listCovers}">
-                            <option value="${cover.id}">${cover.description}</option>
-                      </c:forEach>
-                    </select>
+                      <input class="form-control col" type="file" name="file" id="file-cover">
                   </div>
                 </div>
                 <div class="row w-50 my-2 mx-auto">
@@ -110,12 +99,7 @@ and open the template in the editor.
                       Текст книги 
                   </div>
                   <div class="col-8 text-start">     
-                    <select class="form-select" name="textId" aria-label="Выбрать файл с текстом">
-                      <option selected>Open this select menu</option>
-                      <c:forEach var="text" items="${listTexts}">
-                            <option value="${text.id}">${text.description}</option>
-                      </c:forEach>
-                    </select>
+                    <input class="form-control" type="file" name="file" id="file-text">
                   </div>
                 </div>
                 <div class="row w-50 my-2 mx-auto">
