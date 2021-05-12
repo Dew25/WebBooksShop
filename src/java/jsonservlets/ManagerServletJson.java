@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.ejb.EJB;
@@ -31,7 +32,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 import jsoncovertors.JsonBookBuilder;
-import servlets.LoginServlet;
 import session.BookFacade;
 import session.CoverFacade;
 import session.TextFacade;
@@ -40,6 +40,7 @@ import session.TextFacade;
  *
  * @author jvm
  */
+
 @MultipartConfig()
 @WebServlet(name = "ManagerServletJson", urlPatterns = {
   "/createBookJson",
@@ -50,12 +51,24 @@ public class ManagerServletJson extends HttpServlet {
     @EJB private TextFacade textFacade;
     @EJB private BookFacade bookFacade;
 
+
+    public static final ResourceBundle pathToFile = ResourceBundle.getBundle("property.pathToFile");
+  /**
+   * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+   * methods.
+   *
+   * @param request servlet request
+   * @param response servlet response
+   * @throws ServletException if a servlet-specific error occurs
+   * @throws IOException if an I/O error occurs
+   */
+
   protected void processRequest(HttpServletRequest request, HttpServletResponse response)
           throws ServletException, IOException {
     response.setContentType("text/html;charset=UTF-8");
     request.setCharacterEncoding("UTF-8");
     HttpSession session = request.getSession(false);
-    String uploadFolder = LoginServlet.pathToFile.getString("dir");
+    String uploadFolder = ManagerServletJson.pathToFile.getString("dir");
     String json = null;
 //    JsonReader jsonReader = Json.createReader(request.getReader());
     JsonObjectBuilder job = Json.createObjectBuilder();
@@ -81,29 +94,31 @@ public class ManagerServletJson extends HttpServlet {
                 String fileName = getFileName(filePart);
                 String fileExtension = fileName.substring(fileName.length()-3, fileName.length());
                 if(imagesExtension.contains(fileExtension)){
+
                     fileFolder = "images";
                 }else{
                     fileFolder = "texts";
                 }
                 StringBuilder sbFullPathToFile = new StringBuilder();
-                sbFullPathToFile.append(uploadFolder)//указана в файле свойств
-                  .append(File.separator)
-                  .append(fileFolder)//директория с файлом
-                  .append(File.separator)
-                  .append(fileName);// имя загружаемого файла
+
+                sbFullPathToFile.append(uploadFolder)
+                        .append(File.separator)
+                        .append(fileFolder)
+                        .append(File.separator)
+                        .append(fileName);
                 File file = new File(sbFullPathToFile.toString());
                 file.mkdirs();
                 try(InputStream fileContent = filePart.getInputStream()){
-                   Files.copy(fileContent, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(fileContent, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 }
                 if("images".equals(fileFolder)){
-                    cover = new Cover(fileName, sbFullPathToFile.toString());
+                    cover = new Cover(fileName,sbFullPathToFile.toString());
+
                     coverFacade.create(cover);
                 }else{
                     text = new Text(fileName, sbFullPathToFile.toString());
                     textFacade.create(text);
                 }
-
 
             }
             if(cover == null || text == null){
@@ -128,6 +143,7 @@ public class ManagerServletJson extends HttpServlet {
                         .add("info", "Заполните все поля")
                         .build()
                        .toString();
+
                 break;   
             }
         book = new Book(name, author, Integer.parseInt(publishedYear), isbn, price, cover, text);
@@ -141,6 +157,7 @@ public class ManagerServletJson extends HttpServlet {
                     .toString();
         response.setContentType("application/json"); 
         break;  
+
     }
     if(json == null && "".equals(json)){
         json=job.add("requestStatus", "false")
@@ -153,18 +170,19 @@ public class ManagerServletJson extends HttpServlet {
     }
     
   }
-  private String getFileName(Part part){
-        final String partHeader = part.getHeader("content-disposition");
-        for (String content : part.getHeader("content-disposition").split(";")){
-            if(content.trim().startsWith("filename")){
-                return content
-                        .substring(content.indexOf('=')+1)
-                        .trim()
-                        .replace("\"",""); 
-            }
+private String getFileName(Part part){
+    final String partHeader = part.getHeader("content-disposition");
+    for (String content : part.getHeader("content-disposition").split(";")){
+        if(content.trim().startsWith("filename")){
+            return content
+                    .substring(content.indexOf('=')+1)
+                    .trim()
+                    .replace("\"",""); 
         }
-        return null;
     }
+    return null;
+}
+
 
   // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
   /**

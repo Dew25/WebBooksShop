@@ -1,6 +1,6 @@
 import {authModule} from './AuthModule.js';
 import {bookModule} from './BookModule.js';
-import { userModule } from './UserModule.js';
+import {userModule } from './UserModule.js';
 
 document.getElementById("addBook").onclick = function (){
     toogleMenuActive("addBook");
