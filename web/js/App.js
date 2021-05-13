@@ -2,11 +2,12 @@ import {authModule} from './AuthModule.js';
 import {bookModule} from './BookModule.js';
 import {userModule } from './UserModule.js';
 
+
 document.getElementById("addBook").onclick = function (){
     toogleMenuActive("addBook");
     document.getElementById('info').innerHTML='&nbsp;';
     bookModule.printAddBookForm();
-   
+    
 };
 document.getElementById("listBooks").onclick = function (){
     toogleMenuActive("listBooks");
@@ -38,6 +39,7 @@ document.getElementById("logout").onclick = function (){
     authModule.logout();
 };
 
+bookModule.printListBooks();
 authModule.toogleMenu();
 
 function toogleMenuActive(elementId){

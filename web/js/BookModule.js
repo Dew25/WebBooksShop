@@ -86,8 +86,57 @@ class BookModule{
       document.getElementById('info').innerHTML='Ошибка сервера';
     }
   }
-  printListBooks(){
-    console.log('printListBooks отработал')
+  async printListBooks(){
+    const listBooks = await bookModule.getListBooks();
+    let context = document.getElementById('context');
+    context.innerHTML = '<h3 class="w-100 my-5 text-center">Список книг</h3>';
+    let divForCarts = document.createElement('div');
+    divForCarts.classList.add('w-100');
+    divForCarts.classList.add('d-flex')
+    divForCarts.classList.add('justify-content-center');
+    for(let book of listBooks){
+      let cart = document.createElement('div');
+      cart.classList.add('card');
+      cart.classList.add('m-2');
+      cart.style.cssText=`max-width: 12rem; max-height: 25rem; border:0`;
+      cart.innerHTML= '<p class="card-text text-danger w-100 d-flex justify-content-center">&nbsp;</p>';
+      let img = document.createElement('img');
+      img.classList.add('card-img-top');
+      img.style.cssText=`max-width: 12rem; max-height: 15rem`;
+      img.setAttribute('src',`insertFile/${book.cover.path}`);
+      cart.insertAdjacentElement('beforeEnd',img);
+      cart.insertAdjacentHTML('beforeend',
+                  ` <div class="card-body">
+                      <h5 class="card-title m-0">${book.name}</h5>
+                      <p class="card-text m-0">${book.author}</p>
+                      <p class="card-text m-0">${book.publishedYear}</p>
+                      <p class="card-text m-0">${book.price/100} EUR</p>
+                      <p class="d-inline">
+                        <a href="readBook?bookId=${book.id}" class="link text-nowrap">Читать</a>
+                        <a href="addToBasket?bookId=${book.id}" class="link text-nowrap">В корзину</a>
+                      </p>
+                    </div>`
+                    );
+      divForCarts.insertAdjacentElement('beforeend',cart);
+    }
+
+    context.insertAdjacentElement('beforeend',divForCarts);
+
+  }
+  async getListBooks(){
+    let response = await fetch('listBooksJson',{
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json;charset=utf8'
+      }
+    })
+    if(response.ok){
+      let result = await response.json();
+      return result;
+    }else{
+      document.getElementById('info').innerHTML='Ошибка сервера';
+      return null;
+    }
   }
 }
 const bookModule = new BookModule();

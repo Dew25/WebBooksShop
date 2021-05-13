@@ -44,84 +44,26 @@ and open the template in the editor.
             </nav>
             <div class="w-100 text-center" id="info"> </div>
             <div id="context">
-              <h3 class="w-100 text-center my-5 ">Добавить новую книгу</h3>
-                <div class="row w-50 my-2 mx-auto">
-                  <div class="col-4 text-end">
-                      Название книги 
-                  </div>
-                  <div class="col-8 text-start ">
-                    <input class="w-100" type="text" name="name">
-                  </div>
-                </div>
-                <div class="row w-50 my-2 mx-auto">
-                  <div class="col-4 text-end">
-                    Автор книги 
-                  </div>
-                  <div class="col-8 text-start">  
-                    <input class="col-8" type="text" name="author">
-                  </div>
-                </div>
-                <div class="row w-50 my-2 mx-auto">
-                  <div class="col-4 text-end">   
-                      Год издания книги 
-                  </div>
-                  <div class="col-8 text-start">  
-                    <input class="col-4" type="text" name="publishedYear">
-                  </div>
-                </div>
-                <div class="row w-50 my-2 mx-auto">
-                  <div class="col-4 text-end">   
-                      ISBN: 
-                  </div>
-                  <div class="col-8 text-start">  
-                    <input class="col-8" type="text" name="isbn">
-                  </div>
-                </div>
-                <div class="row w-50 my-2 mx-auto">
-                  <div class="col-4 text-end">   
-                      Цена: 
-                  </div>
-                  <div class="col-8 text-start">  
-                    <input class="col-4" type="text" name="price">
-                  </div>
-                </div>
-                <div class="row w-50 my-2 mx-auto">
-                  <div class="col-4 text-end">
-                      Загрузите обложку 
-                  </div>
-                  <div class="col-8 text-start">     
-<<<<<<< HEAD
-                   
-                      <input class="form-control col" type="file" name="fileCover" id="file-cover">
-                    
-=======
-                      <input class="form-control col" type="file" name="file" id="file-cover">
->>>>>>> sptvr19BookServlet
-                  </div>
-                </div>
-                <div class="row w-50 my-2 mx-auto">
-                  <div class="col-4 text-end">
-                      Текст книги 
-                  </div>
-                  <div class="col-8 text-start">     
-<<<<<<< HEAD
-                    <input class="form-control" type="file" name="fileText" id="file-text">
-=======
-                    <input class="form-control" type="file" name="file" id="file-text">
->>>>>>> sptvr19BookServlet
-                  </div>
-                </div>
-                <div class="row w-50 my-2 mx-auto">
-                  <div class="col-4 text-end">
-                        
-                  </div>
-                  <div class="col-8 text-start mt-3">     
-                    <input class="w-50 bg-primary text-white" type="submit" name="submit" value="Добавить">
-                  </div>
-                </div>
-             <img src="insertFile/D:\UploadDir\WebBooksShop\images\voinaimir.jpg">
-  
+              <h3 class="w-100 my-5 text-center">Список книг</h3>
 
+              <div class="w-100 d-flex justify-content-center">
+  
+                <div class="card m-2" style="max-width: 12rem; max-height: 25rem; border:0">
+                    <p class="card-text text-danger w-100 d-flex justify-content-center">&nbsp;</p>
+                    <img src="insertFile/${book.cover.path}" class="card-img-top" style="max-width: 12rem; max-height: 15rem" alt="...">
+                    <div class="card-body">
+                      <h5 class="card-title m-0">${book.name}</h5>
+                      <p class="card-text m-0">${book.author}</p>
+                      <p class="card-text m-0">${book.publishedYear}</p>
+                      <p class="card-text m-0">${book.price/100} EUR</p>
+                      <p class="d-inline">
+                        <a href="readBook?bookId=${book.id}" class="link text-nowrap">Читать</a>
+                        <a href="addToBasket?bookId=${book.id}" class="link text-nowrap">В корзину</a>
+                      </p>
+                    </div>
+                </div>
+              </div>
+        
             </div>
             <p class="mt-5 py-1 text-center fixed-bottom">&copy; IVKHK 2021</p>
         </div>
