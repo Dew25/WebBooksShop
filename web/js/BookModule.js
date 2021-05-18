@@ -81,7 +81,7 @@ class BookModule{
     if((response).ok){
       const result = await response.json();
       document.getElementById('info').innerHTML = result.info;
-
+      bookModule.printListBooks();
     }else{
       document.getElementById('info').innerHTML='Ошибка сервера';
     }

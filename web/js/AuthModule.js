@@ -77,6 +77,7 @@ class AuthModule{
           sessionStorage.removeItem('token');
           sessionStorage.removeItem('role');
           document.getElementById('info').innerHTML=result.info;
+          bookModule.printListBooks();
         }
       }
       authModule.toogleMenu();

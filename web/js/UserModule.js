@@ -77,53 +77,104 @@ class UserModule{
         
     }
     async printListUsers(){
-      let users = await userModule.loadListUsers();
-      const count = users.listUsers.length;
+      let result = await userModule.loadListUsers();
+      /*result = {
+                  requestStatus: 'true',
+                  info: 'Список пользователей',
+                  listUsers: [
+                    {
+                      user: { id: 1, 
+                              login: 'admin', 
+                              reader:{
+                                id=1,
+                                firstname: 'Juri', 
+                                ...}
+                            },
+                      role: 'ADMIN',
+                    },
+                    {
+                      user: { id: 1, 
+                              login: 'ivan', 
+                              reader:{
+                                id=1,
+                                firstname: 'Иван', 
+                                ...}
+                            },
+                      role: 'READER',
+                    }
+                    
+                  ]
+      }
+      */
+      const count = result.listUsers.length;
       let context = document.getElementById('context');
       context.innerHTML='';
-      await context.insertAdjacentHTML('afterBegin', 
+      context.insertAdjacentHTML('afterBegin', 
       `<h3 class="w-100 my-5 text-center">Список читателей</h3>
         <p class="">Всего пользователей: ${count}<p>
         <table id="tableListReaders" class="table table-striped">
             <thead>
             <th>№</th>
             <th>Id</th>
+            <th>Логин</th>
             <th>Имя</th>
             <th>Фамилия</th>
-            <th>Деньги</th>
-            <th>Логин</th>
+            <th>Телефон</th>
+            <th>Деньги (EUR)</th>
             <th>Роль</th>
             <th>Активность</th>
             <th></th>
             </thead>
             <tbody>
-            <tr>
-            <td>${1}</td>
-            <td>${users.listUsers[i].user.id}</td>
-            <td>${users.listUsers[i].user.reader.firstname}</td>
-            <td>${users.listUsers[i].user.reader.lastname}</td>
-            <td>${users.listUsers[i].user.reader.money/100}</td>
-            <td>${users.listUsers[i].user.login}</td>
-            <td>${users.listUsers[i].role}</td>
-            <td>Yes</td>
-            <td><a class="btn bg-primary text-white"  onclick="function(){userModule.changeUser("${users.listUsers[i].id}")}"  href="#">Изменить</a></td>
-            </tr>
             </tbody>
         </table>`);
-      // let tbody = document.createElement('tbody');
-      // for(let i=0; i<users.listUsers.length; i++){
-      //   tbody.insertAdjacentHTML('beforeEnd', "<tr>");
-      //   tbody.insertAdjacentHTML('beforeEnd', `<td>${i+1}</td>`);
-      //   tbody.insertAdjacentHTML('beforeEnd', `<td>${users.listUsers[i].user.id}</td>`);
-      //   tbody.insertAdjacentHTML('beforeEnd', `<td>${users.listUsers[i].user.reader.firstname}</td>`);
-      //   tbody.insertAdjacentHTML('beforeEnd', `<td>${users.listUsers[i].user.reader.lastname}</td>`);
-      //   tbody.insertAdjacentHTML('beforeEnd', `<td>${users.listUsers[i].user.reader.money/100}</td>`);
-      //   tbody.insertAdjacentHTML('beforeEnd', `<td>${users.listUsers[i].user.login}</td>`);
-      //   tbody.insertAdjacentHTML('beforeEnd', `<td>${users.listUsers[i].role}</td>`);
-      //   tbody.insertAdjacentHTML('beforeEnd', `<td>Yes</td>`);
-      //   tbody.insertAdjacentHTML('beforeEnd', `<td><a class="btn bg-primary text-white"  onclick="function(){userModule.changeUser("${users.listUsers[i].id}")}"  href="#">Изменить</a></td>`);
-      //   tbody.insertAdjacentHTML('beforeEnd', '</tr>');
-      // }
+        let tbody = document.getElementById('tableListReaders')
+                            .getElementsByTagName('tbody')[0]; // элементов может быть несколько
+        let i = 1;  
+        for(let users of result.listUsers){
+          let row = document.createElement('tr');
+          let td = document.createElement('td');
+          td.appendChild(document.createTextNode(i++));
+          row.appendChild(td);
+          let userId = null;
+          for(let userField in users.user){
+            let td = document.createElement('td');
+            if(userField === 'id') userId = users.user[userField];
+            if(typeof users.user[userField] === 'object'){
+              for(let readerField in users.user[userField]){
+                if(readerField === 'id') continue;
+                td = document.createElement('td');
+                if(readerField === 'money'){
+                  td.appendChild(document.createTextNode(users.user[userField][readerField]/100));
+                  row.appendChild(td);
+                }else{
+                  td.appendChild(document.createTextNode(users.user[userField][readerField]));
+                  row.appendChild(td);
+                }
+              }
+            }else{
+              td.appendChild(document.createTextNode(users.user[userField]));
+              row.appendChild(td);
+            }
+          }
+          td=document.createElement('td');
+          td.appendChild(document.createTextNode(users.role));
+          row.appendChild(td);
+          td=document.createElement('td');
+          td.appendChild(document.createTextNode('Yes'));
+          row.appendChild(td);
+          td=document.createElement('td');
+          let span = document.createElement('span');
+          span.classList.add('btn');
+          span.classList.add('text-white');
+          span.classList.add('bg-primary');
+          span.classList.add('p-2');
+          span.appendChild(document.createTextNode('Изменить'));
+          span.onclick = function(){userModule.changeUser(userId)};
+          td.appendChild(span);
+          row.appendChild(td);
+          tbody.appendChild(row);
+        }
     }
 
     async loadListUsers(){
@@ -143,7 +194,7 @@ class UserModule{
       }
     }
     changeUser(userId){
-      concole.log('userId='+userId);
+      alert('userId='+userId);
     }
 }
 const userModule = new UserModule();
