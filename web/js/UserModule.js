@@ -193,8 +193,89 @@ class UserModule{
         return null;
       }
     }
-    changeUser(userId){
-      alert('userId='+userId);
+    async changeUser(userId){
+      //alert('userId='+userId);
+      let data = {'userId' : userId};
+      let response = await fetch('getUserJson',{
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json;charset=utf8'},
+        body: JSON.stringify(data)
+      });
+      if(response.ok){
+        let result = await response.json();
+        document.getElementById('info').innerHTML=result.info;
+        let user = result.user;
+        let money = user.reader.money/100;
+        document.getElementById('context').innerHTML=
+      `<h3 class="w-100 my-5 text-center">Редактирование профиля пользователя</h3>
+        <div class="w-100 d-flex justify-content-center m-2">
+          <form action="createUser" method="POST" onsubmit="false">
+              <div class="row">
+                  <div class="col">
+                    <input type="hidden" id="userId" value="${user.id}">
+                    <input type="text" id="firstname" class="form-control my-2 g-2" placeholder="Имя" aria-label="Имя" value="${user.reader.firstname}">
+                  </div>
+                  <div class="col">
+                    <input type="text" id="lastname" class="form-control my-2 g-2" placeholder="Фамилия" aria-label="Фамилия" value="${user.reader.lastname}">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <input type="text" id="phone" class="form-control my-2 g-2" placeholder="Телефон" aria-label="Телефон" value="${user.reader.phone}">
+                  </div>
+                  <div class="col">
+                    <input type="text" id="money" class="form-control my-2 g-2" placeholder="Деньги" aria-label="Деньги" value="${money}">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <input type="text" id="login" class="form-control my-2 g-2" placeholder="Логин" aria-label="Логин" value="${user.login}">
+                  </div>
+                  <div class="col">
+                    <input type="text" id="password" class="form-control my-2 g-2" placeholder="Пароль" aria-label="Пароль" value="">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <input type="button" id="btnChangeUser" class="form-control my-2 g-2 text-white bg-primary" value="Изменить">
+                  </div>
+                </div>
+        `;
+        
+        document.getElementById('btnChangeUser').addEventListener('click', userModule.editUser); 
+      }else{
+        document.getElementById('info').innerHTML='Ошибка сервера';
+      }
+    }
+    async editUser(){
+      let userId = document.getElementById('userId').value;
+      let firstname = document.getElementById('firstname').value;
+      let lastname = document.getElementById('lastname').value;
+      let phone = document.getElementById('phone').value;
+      let money = document.getElementById('money').value;
+      let login = document.getElementById('login').value;
+      let password = document.getElementById('password').value;
+      const editUser = {
+        'userId': userId,
+        'firstname': firstname,
+        'lastname': lastname,
+        'phone': phone,
+        'money': money,
+        'login': login,
+        'password': password,
+      }
+      let response = await fetch('editUserJson', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json;charset:utf8'},
+        body: JSON.stringify(editUser)
+      });
+      if(response.ok){
+        const result = await response.json();
+        userModule.changeUser(result.userId);
+        document.getElementById('info').innerHTML=result.info;
+      }else{
+        document.getElementById('info').innerHTML='Ошибка серевера';
+      }
     }
 }
 const userModule = new UserModule();

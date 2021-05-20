@@ -3,6 +3,12 @@ import {bookModule} from './BookModule.js';
 import {userModule } from './UserModule.js';
 
 
+document.getElementById("index").onclick = function (){
+    toogleMenuActive("index");
+    document.getElementById('info').innerHTML='&nbsp;';
+    bookModule.printListBooks();
+    
+};
 document.getElementById("addBook").onclick = function (){
     toogleMenuActive("addBook");
     document.getElementById('info').innerHTML='&nbsp;';
@@ -35,8 +41,13 @@ document.getElementById("loginForm").onclick = function (){
 };
 document.getElementById("logout").onclick = function (){
     toogleMenuActive("logout");
-    document.getElementById('info').innerHTML='';
+    document.getElementById('info').innerHTML='&nbsp';
     authModule.logout();
+};
+document.getElementById("basket").onclick = function (){
+    
+    document.getElementById('info').innerHTML='&nbsp';
+    
 };
 
 bookModule.printListBooks();

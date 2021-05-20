@@ -25,6 +25,9 @@ class AuthModule{
               </div>
         </div>`;
         document.getElementById('btnEnter').addEventListener('click',authModule.auth); 
+        document.getElementById('password').addEventListener("keyup", function(e){
+          if(e.key === 'Enter')  authModule.auth();
+        }); 
         document.getElementById('registration-link').addEventListener('click',userModule.registration); 
         
     }
@@ -73,12 +76,10 @@ class AuthModule{
       });
       if(response.ok){
         const result = await response.json();
-        if(result.requestStatus){
           sessionStorage.removeItem('token');
           sessionStorage.removeItem('role');
           document.getElementById('info').innerHTML=result.info;
           bookModule.printListBooks();
-        }
       }
       authModule.toogleMenu();
 
@@ -100,6 +101,7 @@ class AuthModule{
         document.getElementById("discountForm").style.display = 'none';
         document.getElementById("listReaders").style.display = 'none';
         document.getElementById("adminForm").style.display = 'none';
+        document.getElementById("basket").style.display = 'none';
       }else if(role==="READER"){
         document.getElementById("listBooks").style.display = 'block';
         document.getElementById("loginForm").style.display = 'none';
@@ -109,6 +111,7 @@ class AuthModule{
         document.getElementById("discountForm").style.display = 'none';
         document.getElementById("listReaders").style.display = 'none';
         document.getElementById("adminForm").style.display = 'none';
+        document.getElementById("basket").style.display = 'block';
       }else if(role==="MANAGER"){
         document.getElementById("listBooks").style.display = 'block';
         document.getElementById("loginForm").style.display = 'none';
@@ -118,6 +121,7 @@ class AuthModule{
         document.getElementById("discountForm").style.display = 'block';
         document.getElementById("listReaders").style.display = 'none';
         document.getElementById("adminForm").style.display = 'none';
+        document.getElementById("basket").style.display = 'block';
       }else if(role==="ADMIN"){
         document.getElementById("listBooks").style.display = 'block';
         document.getElementById("loginForm").style.display = 'none';
@@ -127,6 +131,7 @@ class AuthModule{
         document.getElementById("discountForm").style.display = 'block';
         document.getElementById("listReaders").style.display = 'block';
         document.getElementById("adminForm").style.display = 'block';
+        document.getElementById("basket").style.display = 'block';
       }
     
     }
