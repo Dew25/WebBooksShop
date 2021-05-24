@@ -33,6 +33,8 @@ document.getElementById("listReaders").onclick = function (){
 };
 document.getElementById("adminForm").onclick = function (){
     toogleMenuActive("adminForm");
+    document.getElementById('info').innerHTML='&nbsp;';
+    userModule.printAdminPanel();
 };
 document.getElementById("loginForm").onclick = function (){
     toogleMenuActive("loginForm");

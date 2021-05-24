@@ -44,43 +44,7 @@ and open the template in the editor.
             </nav>
             <div class="w-100 text-center" id="info"> </div>
             <div id="context">
-              <h3 class="w-100 my-5 text-center">Редактирование профиля пользователя</h3>
-          <div class="w-100 d-flex justify-content-center m-2">
-            <form action="createUser" method="POST" onsubmit="false">
-                <div class="row">
-                    <div class="col">
-                      <input type="hidden" id="id" value="${user.id}">
-                      <input type="text" id="firstname" class="form-control my-2 g-2" placeholder="Имя" aria-label="Имя" value="${user.reader.firstname}">
-                    </div>
-                    <div class="col">
-                      <input type="text" id="lastname" class="form-control my-2 g-2" placeholder="Фамилия" aria-label="Фамилия" value="${user.reader.lastname}">
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col">
-                      <input type="text" id="phone" class="form-control my-2 g-2" placeholder="Телефон" aria-label="Телефон" value="${user.reader.phone}">
-                    </div>
-                    <div class="col">
-                      <input type="text" id="money" class="form-control my-2 g-2" placeholder="Деньги" aria-label="Деньги" value="${user.reader.money}">
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col">
-                      <input type="text" id="login" class="form-control my-2 g-2" placeholder="Логин" aria-label="Логин" value="${user.login}">
-                    </div>
-                    <div class="col">
-                      <input type="text" id="password" class="form-control my-2 g-2" placeholder="Пароль" aria-label="Пароль" value="${user.password}">
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col">
-                      <input type="button" id="btnChangeUser" class="form-control my-2 g-2 text-white bg-primary" value="Изменить">
-                    </div>
-                  </div>
-            
-            </form>
-        </div>
-        
+             
             </div> <!-- context -->
             <p class="mt-5 py-1 text-center fixed-bottom">&copy; IVKHK 2021</p>
         </div>

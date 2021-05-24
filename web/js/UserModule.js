@@ -1,5 +1,83 @@
 import {authModule} from './AuthModule.js';
 class UserModule{
+    async printAdminPanel(){
+      document.getElementById('context').innerHTML=
+      `<h3  class="w-100 my-5 text-center">Панель администратора</h3>
+      <div class="w-100 d-flex justify-content-center m-2">
+              <form id="form1"action="setRole" method="POST">
+                  <p>
+                      Список пользователей: 
+                      <select id="userId" class="form-select">
+                          <option value="" selected>Выберите пользователя</option>
+                          
+                      </select>
+                  </p>
+                  <p>
+                    Список ролей: 
+                    <select id="roleId" class="form-select">
+                      <option value="" selected>Выберите роль</option>
+                        
+                    </select>
+                  </p>
+                  <p><input id="btnSetRole" class="btn btn-primary w-100" type="submit" value="Назначить роль пользователю"></p>
+              </form>`;
+      document.getElementById('form1').addEventListener('onsubmit', userModule.setRoleToUser);        
+      const listUsersWithRole = await userModule.getListUsersWithRole();
+      const selectUserIdOptions = document.getElementById('userId');
+      for(let user of listUsersWithRole){
+        selectUserIdOptions.add(new Option(user.user.login+', роль: '+user.role, user.id));
+      }
+      const listRoles = await userModule.getListRoles();
+      const selectRoleIdOptions = document.getElementById('roleId');
+      for(let role of listRoles){
+        selectRoleIdOptions.add(new Option(role.roleName, role.id));
+      }
+    }
+    async getListUsersWithRole(){
+      let response = await fetch('listUsersWithRoleJson',{
+        method: 'GET',
+        headers:{
+          'Content-Type': 'aplication/json;charser=utf-8'
+        }
+      })
+      if(response.ok){
+        let result = await response.json();
+        return result;
+      }else{
+        document.getElementById('info').innerHTML="Ошибка сервера";
+        return null;
+      }
+    }
+    async getListRoles(){
+      let response = await fetch('listRolesJson',{
+        method: 'GET',
+        headers:{
+          'Content-Type': 'aplication/json;charser=utf-8'
+        }
+      })
+      if(response.ok){
+        let result = await response.json();
+        return result;
+      }else{
+        document.getElementById('info').innerHTML="Ошибка сервера";
+        return null;
+      }
+    }
+    setRoleToUser(){
+      const userId = document.getElementById('userId').value;
+      const roleId = document.getElementById('roleId').value;
+      const data ={
+        'userId':userId,
+        'roleId':roleId
+      }
+      let response = fetch('setRoleToUserJson',{
+        method: 'POST',
+        headers:{
+          'Content-Type': 'aplication/json;charser=utf-8'
+        },
+        body: JSON.stringify(data)
+      })
+    }
     registration(){
         document.getElementById('context').innerHTML=
         `<h3 class="w-100 my-5 text-center">Регистрация пользователя</h3>
@@ -229,7 +307,7 @@ class UserModule{
                 </div>
                 <div class="row">
                   <div class="col">
-                    <input type="text" id="login" class="form-control my-2 g-2" placeholder="Логин" aria-label="Логин" value="${user.login}">
+                    <input type="text" readonly id="login" class="form-control my-2 g-2" placeholder="Логин" aria-label="Логин" value="${user.login}">
                   </div>
                   <div class="col">
                     <input type="text" id="password" class="form-control my-2 g-2" placeholder="Пароль" aria-label="Пароль" value="">
