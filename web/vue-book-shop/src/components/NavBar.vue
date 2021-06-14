@@ -9,14 +9,14 @@
       <ul class="navbar-nav w-100 d-flex justify-content-end">
         <li 
           class="nav-item"
-          v-for="link in links"
-          :link="item"
+          v-for="link in activeListLinks"
+          :link="link"
           :key="link.id"
         >
           <a 
             class="nav-link" 
             aria-current="page" 
-            v-if="activeLink(link)"
+            
             :href="link.url"
             >{{ link.text }}</a>
         </li>
@@ -28,78 +28,58 @@
 </template>
 
 <script>
+
 export default {
   name: 'NavBar',
+  
   props: { 
-    links: Array,
-    role: String
-  },
-  data(){
-    return {
-     
-    }
-
+    role: String,
   },
   computed: {
-    activeLink(link){
-      if(this.role === 'null'){
-        switch(link.id) {
-          case '6': // Вход
-          case '2': // Список книг
-            return 'true';
-            break;
-
-          default:
-            return 'false';
-        }
+    activeListLinks(){
+      let listLinksForRole=[];
+      switch (this.role) {
+        case 'ADMIN':
+          listLinksForRole = [
+            {id: 0, url: 'addBook', text: 'Добавить книгу'},
+            {id: 1, url: 'listBooks', text: 'Список книг'},
+            {id: 2, url: 'purchasedBooks', text: 'Купленные книги'},
+            {id: 3, url: 'discountForm', text: 'Скидка'},
+            {id: 4, url: 'listReaders', text: 'Список читателей'},
+            {id: 5, url: 'adminForm', text: 'Панель администратора'},
+            {id: 7, url: 'logout', text: 'Выйти'},
+            {id: 8, url: 'addToCart', text: 'Корзина'},
+          ]
+          break
+        case 'MANAGER':
+          listLinksForRole = [
+            {id: 0, url: 'addBook', text: 'Добавить книгу'},
+            {id: 1, url: 'listBooks', text: 'Список книг'},
+            {id: 2, url: 'purchasedBooks', text: 'Купленные книги'},
+            {id: 3, url: 'discountForm', text: 'Скидка'},
+            {id: 7, url: 'logout', text: 'Выйти'},
+            {id: 8, url: 'addToCart', text: 'Корзина'},
+          ]
+          break;
+        case 'READER':
+          listLinksForRole = [
+            {id: 1, url: 'listBooks', text: 'Список книг'},
+            {id: 2, url: 'purchasedBooks', text: 'Купленные книги'},
+            {id: 7, url: 'logout', text: 'Выйти'},
+            {id: 8, url: 'addToCart', text: 'Корзина'},
+          ]
+          break;
+        default:
+          listLinksForRole = [
+            {id: 6, url: 'loginForm', text: 'Вoйти'},
+            {id: 1, url: 'listBooks', text: 'Список книг'},
+          ]
+          break;
       }
-      if(this.role === 'READER'){
-        switch(link.id) {
-          case '1': // Список книг 
-          case '2': // Купленные книги
-          case '7': // Выход
-          case '8': // В корзину 
-            return 'true';
-            break;
-          default:
-            return 'false';
-        }
-      }
-      if(this.role === 'MANAGER'){
-        switch(link.id) {
-          case '0': // Добавить книгу 
-          case '1': // Список книг 
-          case '2': // Купленные книги 
-          case '3': // Скидка 
-          case '7': // Выход
-          case '8': // В корзину 
-            return 'true';
-            break;
-
-          default:
-            return 'false';
-        }
-      }
-      if(this.role === 'ADMIN'){
-        switch(link.id) {
-          case '0': // Добавить книгу 
-          case '1': // Список книг 
-          case '2': // Купленные книги 
-          case '3': // Скидка 
-          case '4': // Список читателей 
-          case '5': // Панель администратора 
-          case '7': // Выход
-          case '8': // В корзину 
-            return 'true';
-            break;
-
-          default:
-            return 'false';
-        }
-      }
+      
+      return listLinksForRole;
     }
   }
-  
 }
 </script>
 
