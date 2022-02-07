@@ -5,6 +5,8 @@
  */
 package web.general;
 
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -14,6 +16,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import web.IndexPage;
+import web.webinf.guest.RegistrationFormPage;
 import web.webinf.menu.MenuPage;
 
 /**
@@ -27,11 +32,13 @@ public class GeneralTest {
     }
     
     @BeforeClass
-    public static void setUpClass() {
+    public static void setUpClass() throws UnsupportedEncodingException {
         System.setProperty("webdriver.chrome.driver", "lib/chromedriver.exe");
+        System.setOut(new PrintStream(System.out, true, "UTF-8"));
         driver = new ChromeDriver();
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         driver.get("http://localhost:8080/WebBooksShop/");
+        driver.manage().window().maximize();
     }
     
     @AfterClass
@@ -48,7 +55,6 @@ public class GeneralTest {
     public void tearDown() {
     }
     
-    
     @Test
     public void lostOfControlTest(){
         System.out.println("LostOfControlTest: ");
@@ -59,7 +65,7 @@ public class GeneralTest {
     @Test
     public void desableAccessToAdminProfile(){
         System.out.println("DesableAccessToAdminProfileTest: ");
-        logoutTest();
+        registrationNewUser("ivan", "123");
         loginUserTest("ivan", "123");
         changeUserProfile("admin", Boolean.FALSE);
     }    
@@ -87,6 +93,7 @@ public class GeneralTest {
         System.out.println("    Result: " + result);
         Assert.assertEquals(result, expected);
     }
+    
     public void logoutTest(){
         System.out.println("logoutTest: ");
         menuPage.logout();
@@ -111,6 +118,20 @@ public class GeneralTest {
            System.out.println("Expected и Result должны несовпадать");
            Assert.assertNotEquals(result, expected);
         }
+    }
+    
+    public void registrationNewUser(String login,String password){
+        System.out.println("registrationNewUser("+login+","+password+"): ");
+        logoutTest();
+        menuPage.registrationForm();
+        RegistrationFormPage registrationFormPage = new RegistrationFormPage(driver);
+        IndexPage indexPage = registrationFormPage.registerNewUser(login, password);
+        String result = indexPage.getMessageInfo();
+        String expected = "Что-то пошло не так :(";
+        System.out.println("    Expected: "+ expected);
+        System.out.println("    Result: " + result);
+        System.out.println("Expected и Result должны несовпадать");
+        Assert.assertNotEquals(result, expected);
     }
     
 }

@@ -22,6 +22,7 @@ public class MenuPage {
     private final By adminformBy = By.id("adminForm");
     private final By listReadersBy = By.id("adminForm");
     private final By logoutBy = By.id("logout");
+    private final By registrationBy = By.id("registrationForm");
     public MenuPage(WebDriver driver) {
         this.driver = driver;
     }
@@ -47,5 +48,8 @@ public class MenuPage {
 
     public void logout() {
         driver.findElement(logoutBy).click();
+    }
+    public void registrationForm(){
+        driver.findElement(registrationBy).click();
     }
 }

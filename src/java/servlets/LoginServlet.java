@@ -187,20 +187,30 @@ public static final ResourceBundle pathToFile = ResourceBundle.getBundle("proper
                 }
                 
                 Reader reader = new Reader(firstname, lastname, phone, money);
-                readerFacade.create(reader);
-                salt = encryptPassword.createSalt();
-                encryptPwd = encryptPassword.createHash(password, salt);
-                user = new User(login, encryptPwd, salt, reader);
-                userFacade.create(user);
-                //Здесь добавим роль пользователю.
-                Role roleReader = roleFacade.findByName("READER");
-                UserRoles userRoles = new UserRoles(user, roleReader);
-                userRolesFacade.create(userRoles);
-                request.setAttribute("info", 
-                        "Читатель "+user.getLogin()+" добавлен"     
-                );
-                request.getRequestDispatcher("/index").forward(request, response);
-                break; 
+                try {
+                    readerFacade.create(reader);
+                    salt = encryptPassword.createSalt();
+                    encryptPwd = encryptPassword.createHash(password, salt);
+                    user = new User(login, encryptPwd, salt, reader);
+                    userFacade.create(user);
+                    //Здесь добавим роль пользователю.
+                    Role roleReader = roleFacade.findByName("READER");
+                    UserRoles userRoles = new UserRoles(user, roleReader);
+                    userRolesFacade.create(userRoles);
+                    request.setAttribute("info","Читатель "+user.getLogin()+" добавлен");
+                    request.getRequestDispatcher("/index").forward(request, response);
+                    break; 
+                } catch (Exception e) {
+                    User existsUser = userFacade.findByLogin(login);
+                    if(existsUser != null){
+                        request.setAttribute("info", 
+                        "Читатель "+existsUser.getLogin()+" уже существует"); 
+                    }else{
+                        request.setAttribute("info", "Что-то пошло не так :("); 
+                    }
+                    request.getRequestDispatcher("/index").forward(request, response);
+                    break;
+                }
             case "/listBooks":
                 request.setAttribute("activeListBook", "true");
                 
@@ -213,7 +223,6 @@ public static final ResourceBundle pathToFile = ResourceBundle.getBundle("proper
                 } catch (Exception e) {
                     listBooks = new ArrayList<>();
                 }
-                
                 request.setAttribute("listBooks", listBooks);
                 request.getRequestDispatcher(LoginServlet.pathToFile.getString("listBooks")).forward(request, response);
                 break;    

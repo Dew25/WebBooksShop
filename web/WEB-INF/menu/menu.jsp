@@ -39,7 +39,7 @@
             <c:otherwise>
                 <a class="nav-link <c:if test="${activeListBook}">active</c:if>" href="listBooks">Список книг</a>
                 <a class="nav-link <c:if test="${activeEnter}">active</c:if>" id="loginForm" href="loginForm">Войти</a>
-                <a class="nav-link <c:if test="${activeRegistration}">active</c:if>" href="registrationForm">Регистрация</a>
+                <a class="nav-link <c:if test="${activeRegistration}">active</c:if>" id="registrationForm" href="registrationForm">Регистрация</a>
             </c:otherwise>
         </c:choose>
         <c:if test="${basketListCount > 0}">
