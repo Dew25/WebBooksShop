@@ -5,16 +5,36 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-   <h3 class="w-100 my-5 text-center">Редактировать профайл пльзователя</h3>
+   <h3 class="w-100 my-5 text-center">Регистрация нового пользователя</h3>
    <div class="w-100 d-flex justify-content-center m-2">
-    <form action="createUser" method="POST">
-      Имя читателя <input type="text" name="firstname" id="firstname"  value="${user.reader.firstname}"><br>
-      Фамилия читателя <input type="text" name="lastname" id="lastname"  value="${user.reader.lastname}"><br>
-      Телефон <input type="text" name="phone" id="phone"  value="${user.reader.phone}"><br>
-      Деньги <input type="text" name="money" id="money"  value="${user.reader.money}"><br>
-      Логин <input type="text" name="login" id="login"  value="${user.login}"><br>
-      Пароль <input type="text" name="password" id="password" value=""><br>
-      <input type="submit" name="submit" value="Зарегистрировать">
-    </form>
+       <div class="card border-0" style="width: 28rem;">
+        <form action="createUser" method="POST">
+            <div class="mb-3">
+                <label for="firstname" class="form-label">Имя читателя</label>
+                <input type="text" class="form-control" name="firstname" id="firstname" placeholder="" value="${user.reader.firstname}">
+            </div>
+            <div class="mb-3">
+                <label for="lastname" class="form-label">Фамилия читателя</label>
+                <input type="text" class="form-control" name="lastname" id="lastname"  value="${user.reader.lastname}">
+            </div>
+            <div class="mb-3">
+                <label for="phone" class="form-label">Телефон</label>
+                <input type="text" class="form-control" name="phone" id="phone"  value="${user.reader.phone}">
+            </div>
+            <div class="mb-3">
+                <label for="money" class="form-label">Деньги</label>
+                <input type="text" class="form-control" name="money" id="money"  value="${user.reader.money}">
+            </div>
+            <div class="mb-3">
+                <label for="login" class="form-label">Логин</label>
+               <input type="text" class="form-control" name="login" id="login"  value="${user.login}">
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Пароль</label>
+                <input type="text" class="form-control" name="password" id="password" value="">
+            </div>
+          
+          <input type="submit" class="btn btn-primary" name="submit" value="Зарегистрировать">
+        </form>
+       </div>
    </div>
-  
