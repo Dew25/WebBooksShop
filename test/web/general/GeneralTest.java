@@ -34,7 +34,6 @@ public class GeneralTest {
     @BeforeClass
     public static void setUpClass() throws UnsupportedEncodingException {
         System.setProperty("webdriver.chrome.driver", "lib/chromedriver.exe");
-        System.setOut(new PrintStream(System.out, true, "UTF-8"));
         driver = new ChromeDriver();
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         driver.get("http://localhost:8080/WebBooksShop/");
@@ -54,23 +53,32 @@ public class GeneralTest {
     @After
     public void tearDown() {
     }
-    
+    /*
+        Проверка потери управляемости приложения 
+        (когда пользовательский ADMIN понижает права суперадмина)
+    */
     @Test
     public void lostOfControlTest(){
         System.out.println("LostOfControlTest: ");
-        loginUserTest("admin", "12345");
-        changeRoleTest(false);
+        loginUser("admin", "12345");
+        changeRole(false, "READER", "1");
+        logout();
     }
-    
+    /*
+        Проверка на изменение профайла суперадмина пользовательским ADMIN
+    */
     @Test
-    public void desableAccessToAdminProfile(){
+    public void desableAccessToAdminProfileTest(){
         System.out.println("DesableAccessToAdminProfileTest: ");
         registrationNewUser("ivan", "123");
-        loginUserTest("ivan", "123");
+        setRoleToUser("ADMIN", "2");
+        logout();
+        loginUser("ivan", "123");
         changeUserProfile("admin", Boolean.FALSE);
+        logout();
     }    
     
-    public void loginUserTest(String login, String password){
+    public void loginUser(String login, String password){
         System.out.println("loginUserTest: ");
         String result = menuPage.getLoginFormPage().loginValidUser(login,password).getMessageInfo();
         String expected = "Вы вошли как "+login;
@@ -79,22 +87,23 @@ public class GeneralTest {
         Assert.assertEquals(result, expected);
     }
         
-    public void changeRoleTest(boolean allowed){
-            System.out.println("changeRoleTest("+allowed+"):");
-            menuPage.getAdminFormPage().validLostAccess();
+    public void changeRole(boolean onChange, String roleName, String userId){
+            System.out.println("changeRoleTest("+onChange+" "+roleName+" "+userId+"):");
+            menuPage.getAdminFormPage().setRoleToUser(roleName, userId);
             String result = menuPage.getMessageInfo();
             String expected;
-        if(allowed){
+        if(onChange){
             expected = "Роль изменена";
         }else{
             expected = "Изменить роль невозможно";
         }
         System.out.println("    Expected: "+ expected);
         System.out.println("    Result: " + result);
+        System.out.println("Expected и Result должны совпадать");
         Assert.assertEquals(result, expected);
     }
     
-    public void logoutTest(){
+    public void logout(){
         System.out.println("logoutTest: ");
         menuPage.logout();
         String result = menuPage.getMessageInfo();
@@ -122,7 +131,6 @@ public class GeneralTest {
     
     public void registrationNewUser(String login,String password){
         System.out.println("registrationNewUser("+login+","+password+"): ");
-        logoutTest();
         menuPage.registrationForm();
         RegistrationFormPage registrationFormPage = new RegistrationFormPage(driver);
         IndexPage indexPage = registrationFormPage.registerNewUser(login, password);
@@ -132,6 +140,11 @@ public class GeneralTest {
         System.out.println("    Result: " + result);
         System.out.println("Expected и Result должны несовпадать");
         Assert.assertNotEquals(result, expected);
+    }
+    
+    public void setRoleToUser(String roleName, String userId){
+        loginUser("admin","12345");
+        changeRole(true, roleName, "2");
     }
     
 }

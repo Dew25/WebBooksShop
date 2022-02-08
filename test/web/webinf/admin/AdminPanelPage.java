@@ -26,13 +26,18 @@ public class AdminPanelPage {
     public String getMessageInfo(){
         return driver.findElement(infoBy).getText();
     }
-    
-    public void validLostAccess(){
+    /**
+     * Назначение роли пользователю
+     * @param roleName название роли которую надо установить (READER,MANAGER,ADMIN)
+     * @param value значение value в option
+     */
+    public void setRoleToUser(String roleName, String value){
        Select selectUsers = new Select(driver.findElement(useridselectBy)); 
-       selectUsers.selectByVisibleText("Juri Melnikov, логин: admin, роль: ADMIN");
-       Select selectRoles = new Select(driver.findElement(roleidselectBy)); 
-       selectRoles.selectByVisibleText("READER");
+       selectUsers.selectByValue(value);
+       Select selectRoles = new Select(driver.findElement(roleidselectBy));
+       selectRoles.selectByVisibleText(roleName);
        driver.findElement(buttonsubmitBy).click();
     }
+    
     
 }
